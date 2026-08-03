@@ -23,6 +23,11 @@
           </keep-alive>
         </transition>
       </router-view>
+
+      <!-- 底部备案信息 -->
+      <footer class="icp-footer">
+        <a href="http://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">湘ICP备2026032707号-1</a>
+      </footer>
     </main>
 
     <!-- 右下角悬浮新增按钮（印章风，详情页隐藏） -->
@@ -145,6 +150,17 @@ body {
 .app-main {
   background: #fffbf0;
   min-height: calc(100vh - 100px);
+}
+
+/* ═══ 底部备案信息：小字浅灰，居中对齐 ═══ */
+.icp-footer {
+  text-align: center;
+  padding: 18px 0 14px;
+}
+.icp-footer a {
+  font-size: 11px;
+  color: #b5aca1;
+  text-decoration: none;
 }
 
 /* ═══ 页面切换淡入 ═══ */
