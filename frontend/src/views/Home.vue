@@ -75,12 +75,10 @@
 
 <script setup>
 import { ref, computed, onMounted, onActivated, onDeactivated, inject, watch, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
 
 defineOptions({ name: 'Home' })
 
-const router = useRouter()
 const dishes = ref([])
 const stats = ref({ total: 0, totalCooked: 0, thisMonth: 0 })
 const loading = ref(true)
@@ -100,6 +98,7 @@ const todayLabel = computed(() => {
 })
 
 // 数据版本信号：保存成功后静默刷新
+const openDishDetail = inject('openDishDetail')
 const dataVersion = inject('dataVersion', null)
 if (dataVersion) watch(dataVersion, () => fetchData(false))
 
@@ -137,7 +136,7 @@ async function fetchData(showLoading = true) {
 }
 
 function goDetail(dish) {
-  router.push('/dish/' + dish.id)
+  openDishDetail(dish.id)
 }
 
 function formatDate(d) {

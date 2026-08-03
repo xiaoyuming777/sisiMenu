@@ -47,19 +47,28 @@
       :edit-id="popupEditId"
       @saved="onSaved"
     />
+
+    <!-- 详情弹出层 -->
+    <DishDetailPopup v-model:show="detailShow" :id="detailId" />
   </div>
 </template>
 
 <script setup>
-import { computed, ref, provide } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, ref, provide, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import DishFormPopup from './components/DishFormPopup.vue'
+import DishDetailPopup from './components/DishDetailPopup.vue'
 
 const route = useRoute()
+const router = useRouter()
 
 const popupShow = ref(false)
 const popupMode = ref('add')
 const popupEditId = ref(null)
+
+// 详情弹窗状态
+const detailShow = ref(false)
+const detailId = ref(null)
 
 // 数据版本信号：新增/编辑/删除成功后 +1，缓存页面（Home/Search）监听到后静默刷新
 const dataVersion = ref(0)
@@ -72,6 +81,12 @@ provide('openDishForm', (mode, id) => {
   popupShow.value = true
 })
 
+// 打开详情弹窗
+provide('openDishDetail', (id) => {
+  detailId.value = id
+  detailShow.value = true
+})
+
 function openAddPopup() {
   popupMode.value = 'add'
   popupEditId.value = null
@@ -82,6 +97,16 @@ function onSaved() {
   // 表单保存成功后，通知缓存页面刷新数据
   dataVersion.value++
 }
+
+// 深链支持：直接访问 /dish/3 时打开详情弹窗并清理 URL
+onMounted(() => {
+  const m = location.pathname.match(/^\/dish\/(\d+)\/?$/)
+  if (m) {
+    detailId.value = Number(m[1])
+    detailShow.value = true
+    router.replace('/')
+  }
+})
 
 const navTitle = computed(() => {
   const map = {

@@ -1,79 +1,85 @@
 <template>
-  <div class="dish-detail">
-    <!-- ═══ 顶部眉线：刊头 + 分享 + 日期 ═══ -->
-    <header class="dd-topline">
-      <span class="dd-en">SISI'S COOKBOOK</span>
-      <button class="dd-share" @click="onShare" :disabled="generating" aria-label="分享海报">↗</button>
-      <span class="dd-date">{{ todayLabel }}</span>
-    </header>
+  <van-popup
+    :show="show"
+    position="bottom"
+    :style="{ height: '92%', borderRadius: '24px 24px 0 0' }"
+    @update:show="$emit('update:show', $event)"
+  >
+    <div class="detail-popup">
+      <!-- ═══ 顶部刊头 ═══ -->
+      <div class="dp-topline">
+        <span class="dp-en">RECIPE · 菜谱</span>
+        <button class="dp-share" @click="onShare" :disabled="generating" aria-label="分享海报">↗</button>
+        <span class="dp-date">{{ todayLabel }}</span>
+        <button class="dp-close" @click="close" aria-label="关闭">✕</button>
+      </div>
 
-    <!-- 加载中 -->
-    <div v-if="loading" class="loading">翻页中...</div>
+      <!-- ═══ 内容滚动区 ═══ -->
+      <div class="dp-body">
+        <!-- 加载中 -->
+        <div v-if="loading" class="loading">翻页中...</div>
 
-    <!-- 未找到 -->
-    <div v-else-if="!dish" class="empty-state">
-      <div class="empty-icon"><img src="/icons/silverware.svg" alt="" /></div>
-      <div class="empty-title">没有这一页</div>
-      <div class="empty-desc">这道菜好像不存在</div>
+        <!-- 未找到 -->
+        <div v-else-if="!dish" class="empty-state">
+          <div class="empty-icon"><img src="/icons/silverware.svg" alt="" /></div>
+          <div class="empty-title">没有这一页</div>
+          <div class="empty-desc">这道菜好像不存在</div>
+        </div>
+
+        <!-- 内容 -->
+        <template v-else>
+          <!-- 全宽圆角大图 -->
+          <div class="dp-photo" @click="previewShow = true">
+            <img :src="dish.photo" :alt="dish.name" />
+          </div>
+
+          <!-- 标题区 -->
+          <div class="dp-head">
+            <h1 class="dp-name">{{ dish.name }}</h1>
+          </div>
+
+          <!-- 胶囊标签组 -->
+          <div class="dp-tags">
+            <span class="dp-tag"><img class="ic" src="/icons/calendar.svg" alt="" /> {{ dish.cook_date }}</span>
+            <span class="dp-tag"><img class="ic" src="/icons/chef.svg" alt="" /> {{ dish.cook_by }}</span>
+            <span v-if="dish.rating" class="dp-tag dp-tag-star">{{ starText(dish.rating) }}</span>
+            <span v-if="dish.difficulty" class="dp-tag"><img class="ic" :src="`/icons/${difficultyIcon(dish.difficulty)}.svg`" alt="" /> {{ dish.difficulty }}</span>
+          </div>
+
+          <!-- 食材清单 -->
+          <section v-if="dish.ingredients" class="dp-sec">
+            <div class="dp-sec-hd">
+              <span class="dp-sec-rule"></span>
+              <span class="dp-sec-title"><img class="ic" src="/icons/carrot.svg" alt="" /> 食材</span>
+            </div>
+            <p class="dp-ingredients">{{ dish.ingredients }}</p>
+          </section>
+
+          <!-- 备注心得 -->
+          <section v-if="dish.note" class="dp-sec">
+            <div class="dp-sec-hd">
+              <span class="dp-sec-rule"></span>
+              <span class="dp-sec-title"><img class="ic" src="/icons/heart.svg" alt="" /> 心得</span>
+            </div>
+            <p class="dp-note">{{ dish.note }}</p>
+          </section>
+
+          <!-- 操作 -->
+          <div class="dp-actions">
+            <button class="dp-act dp-act-edit" @click="openDishForm('edit', dish.id)">编辑</button>
+            <button class="dp-act dp-act-del" @click="handleDelete">删除</button>
+          </div>
+        </template>
+      </div>
     </div>
 
-    <!-- 内容 -->
-    <template v-else>
-      <!-- 全宽出血大图 -->
-      <div class="dd-photo" @click="previewShow = true">
-        <img :src="dish.photo" :alt="dish.name" />
+    <!-- ═══ 图片全屏预览 ═══ -->
+    <Teleport to="body">
+      <div v-if="previewShow" class="custom-image-preview" @click="previewShow = false">
+        <img :src="dish.photo" :alt="dish.name" class="preview-img" @click.stop />
+        <button class="preview-close" @click="previewShow = false">✕</button>
       </div>
-
-      <!-- 自定义图片预览 -->
-      <Teleport to="body">
-        <div v-if="previewShow" class="custom-image-preview" @click="previewShow = false">
-          <img :src="dish.photo" :alt="dish.name" class="preview-img" @click.stop />
-          <button class="preview-close" @click="previewShow = false">✕</button>
-        </div>
-      </Teleport>
-
-      <!-- 标题区 -->
-      <div class="dd-head">
-        <h1 class="dd-name">{{ dish.name }}</h1>
-      </div>
-
-      <!-- 胶囊标签组 -->
-      <div class="dd-tags">
-        <span class="dd-tag"><img class="ic" src="/icons/calendar.svg" alt="" /> {{ dish.cook_date }}</span>
-        <span class="dd-tag"><img class="ic" src="/icons/chef.svg" alt="" /> {{ dish.cook_by }}</span>
-        <span v-if="dish.rating" class="dd-tag dd-tag-star">{{ starText(dish.rating) }}</span>
-        <span v-if="dish.difficulty" class="dd-tag"><img class="ic" :src="`/icons/${difficultyIcon(dish.difficulty)}.svg`" alt="" /> {{ dish.difficulty }}</span>
-      </div>
-
-      <!-- 食材清单 -->
-      <section v-if="dish.ingredients" class="dd-sec">
-        <div class="dd-sec-hd">
-          <span class="dd-sec-rule"></span>
-          <span class="dd-sec-title"><img class="ic" src="/icons/carrot.svg" alt="" /> 食材</span>
-        </div>
-        <p class="dd-ingredients">{{ dish.ingredients }}</p>
-      </section>
-
-      <!-- 备注心得 -->
-      <section v-if="dish.note" class="dd-sec">
-        <div class="dd-sec-hd">
-          <span class="dd-sec-rule"></span>
-          <span class="dd-sec-title"><img class="ic" src="/icons/heart.svg" alt="" /> 心得</span>
-        </div>
-        <p class="dd-note">{{ dish.note }}</p>
-      </section>
-
-      <!-- 操作 -->
-      <div class="dd-actions">
-        <button class="dd-act dd-act-edit" @click="openDishForm('edit', dish.id)">编辑</button>
-        <button class="dd-act dd-act-del" @click="handleDelete">删除</button>
-      </div>
-    </template>
-
-    <!-- 右下角悬浮返回按钮（与"上新"同款印章风） -->
-    <button class="fab-back" @click="goBack" aria-label="返回">
-      <span class="fab-back-txt">返回</span>
-    </button>
+    </Teleport>
 
     <!-- ═══ 海报预览 ═══ -->
     <Teleport to="body">
@@ -83,22 +89,24 @@
         <a class="poster-dl" :href="posterUrl" :download="(dish?.name || 'menu') + '.png'" @click.stop>保存图片</a>
       </div>
     </Teleport>
-  </div>
+  </van-popup>
 </template>
 
 <script setup>
-import { ref, computed, inject, onMounted, onBeforeUnmount, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, computed, inject, watch } from 'vue'
 import { showConfirmDialog, showToast } from 'vant'
 
-const DEFAULT_TITLE = '思思大王的菜单'
+const props = defineProps({
+  show: { type: Boolean, default: false },
+  id: { type: [Number, String], default: null },
+})
+const emit = defineEmits(['update:show'])
 
 const openDishForm = inject('openDishForm')
-const route = useRoute()
-const router = useRouter()
+const dataVersion = inject('dataVersion', null)
 
 const dish = ref(null)
-const loading = ref(true)
+const loading = ref(false)
 const previewShow = ref(false)
 const generating = ref(false)
 const posterShow = ref(false)
@@ -111,14 +119,34 @@ const todayLabel = computed(() => {
   return `${d.getFullYear()}.${m}.${day}`
 })
 
+function close() {
+  emit('update:show', false)
+}
+
 async function fetchDish() {
+  if (!props.id) return
+  loading.value = true
   try {
-    const res = await fetch('/api/dishes/' + route.params.id)
+    const res = await fetch('/api/dishes/' + props.id)
     const data = await res.json()
     if (data.success) dish.value = data.data
+    else dish.value = null
   } catch (e) { console.error(e) }
   finally { loading.value = false }
 }
+
+// 打开 / 切换菜品时加载
+watch(() => props.show, (v) => {
+  if (v) fetchDish()
+})
+watch(() => props.id, () => {
+  if (props.show) fetchDish()
+})
+
+// 编辑/删除后列表数据版本变化 → 详情也重新拉取（菜名/照片可能变了）
+if (dataVersion) watch(dataVersion, () => {
+  if (props.show && dish.value) fetchDish()
+})
 
 function starText(r) {
   const n = Math.max(1, Math.min(5, Math.round(Number(r) || 0)))
@@ -126,39 +154,22 @@ function starText(r) {
 }
 function difficultyIcon(d) { return { '新手友好': 'sprout', '小有挑战': 'chili', '硬菜': 'crown' }[d] || '' }
 
-function goBack() {
-  // 有上一页则返回；没有（如直接打开链接）则回首页
-  const state = window.history.state
-  if (state && state.back) router.back()
-  else router.push('/')
-}
-
 async function handleDelete() {
-  try { await showConfirmDialog({ title: '确认删除', message: `确定要删除「${dish.value.name}」吗？`, confirmButtonColor: '#c8563a' }) }
-  catch { return }
   try {
-    const res = await fetch('/api/dishes/' + route.params.id, { method: 'DELETE' })
+    await showConfirmDialog({ title: '确认删除', message: `确定要删除「${dish.value.name}」吗？`, confirmButtonColor: '#c8563a' })
+  } catch { return }
+  try {
+    const res = await fetch('/api/dishes/' + props.id, { method: 'DELETE' })
     const data = await res.json()
-    if (data.success) { showToast({ message: '删除成功', icon: 'success', duration: 1500 }); router.push('/') }
-    else { showToast({ message: data.error || '删除失败', icon: 'fail' }) }
+    if (data.success) {
+      showToast({ message: '删除成功', icon: 'success', duration: 1500 })
+      close()
+      if (dataVersion) dataVersion.value++ // 通知列表刷新
+    } else {
+      showToast({ message: data.error || '删除失败', icon: 'fail' })
+    }
   } catch { showToast({ message: '网络错误', icon: 'fail' }) }
 }
-
-onMounted(() => {
-  // 进入详情页回到顶部（避免保留列表页滚动位置）
-  window.scrollTo(0, 0)
-  fetchDish()
-})
-
-// 浏览器标签页标题：菜名 - 思思大王的菜单
-watch(dish, (d) => {
-  document.title = d?.name ? `${d.name} - ${DEFAULT_TITLE}` : DEFAULT_TITLE
-}, { immediate: true })
-
-// 离开详情页恢复默认标题
-onBeforeUnmount(() => {
-  document.title = DEFAULT_TITLE
-})
 
 /* ═══════════════════ 分享海报 ═══════════════════ */
 
@@ -450,28 +461,31 @@ async function onShare() {
   display: inline-block;
 }
 
-/* ═══ 页面基调：奶油黄 ═══ */
-.dish-detail {
+/* ═══ 弹窗容器 ═══ */
+.detail-popup {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   background: #fffbf0;
-  padding-bottom: 40px;
   font-family: -apple-system, 'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', 'Microsoft YaHei', sans-serif;
 }
 
-/* ═══ 顶部眉线（虚线） ═══ */
-.dd-topline {
+/* ═══ 顶部刊头 ═══ */
+.dp-topline {
+  flex: none;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 18px 24px 14px;
+  padding: 16px 24px 13px;
   border-bottom: 1px dashed #f0dfb8;
 }
-.dd-en {
+.dp-en {
   flex: 1;
   font-size: 9px;
   letter-spacing: 3px;
   color: #d4b98a;
 }
-.dd-share {
+.dp-share {
   border: none;
   background: none;
   font-size: 16px;
@@ -480,17 +494,34 @@ async function onShare() {
   cursor: pointer;
   padding: 0 8px 0 0;
 }
-.dd-share:disabled {
+.dp-share:disabled {
   opacity: 0.4;
 }
-.dd-date {
+.dp-date {
   font-size: 9px;
   letter-spacing: 2px;
   color: #d4b98a;
 }
+.dp-close {
+  border: none;
+  background: none;
+  font-size: 15px;
+  line-height: 1;
+  color: #d4b98a;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+/* ═══ 内容滚动区 ═══ */
+.dp-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 30px;
+}
 
 /* ═══ 大图：圆角卡片 ═══ */
-.dd-photo {
+.dp-photo {
   position: relative;
   margin: 18px 22px 0;
   border-radius: 22px;
@@ -498,7 +529,7 @@ async function onShare() {
   cursor: zoom-in;
   box-shadow: 0 8px 24px rgba(255, 180, 120, 0.22);
 }
-.dd-photo img {
+.dp-photo img {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 10;
@@ -506,13 +537,13 @@ async function onShare() {
 }
 
 /* ═══ 标题区 ═══ */
-.dd-head {
+.dp-head {
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 26px 24px 0;
 }
-.dd-name {
+.dp-name {
   flex: 1;
   font-size: 28px;
   font-weight: 800;
@@ -523,13 +554,13 @@ async function onShare() {
 }
 
 /* 胶囊标签组 */
-.dd-tags {
+.dp-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   padding: 14px 24px 0;
 }
-.dd-tag {
+.dp-tag {
   font-size: 11px;
   font-weight: 600;
   background: #fff3dd;
@@ -541,27 +572,27 @@ async function onShare() {
   align-items: center;
   gap: 4px;
 }
-.dd-tag-star {
+.dp-tag-star {
   background: #fff6e0;
   color: #e8a33d;
   letter-spacing: 2px;
 }
 
 /* ═══ 分栏 ═══ */
-.dd-sec {
+.dp-sec {
   padding: 30px 24px 0;
 }
-.dd-sec-hd {
+.dp-sec-hd {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 14px;
 }
-.dd-sec-rule {
+.dp-sec-rule {
   width: 18px;
   border-top: 1px dashed #e8c98a;
 }
-.dd-sec-title {
+.dp-sec-title {
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -572,7 +603,7 @@ async function onShare() {
 }
 
 /* 食材 */
-.dd-ingredients {
+.dp-ingredients {
   margin: 0;
   font-size: 15px;
   line-height: 2;
@@ -581,7 +612,7 @@ async function onShare() {
 }
 
 /* 心得：白底卡片 */
-.dd-note {
+.dp-note {
   margin: 0;
   padding: 16px 18px;
   background: #fff;
@@ -595,12 +626,12 @@ async function onShare() {
 }
 
 /* ═══ 操作按钮：可爱胶囊 ═══ */
-.dd-actions {
+.dp-actions {
   display: flex;
   gap: 14px;
   padding: 36px 24px 0;
 }
-.dd-act {
+.dp-act {
   flex: 1;
   height: 44px;
   border: none;
@@ -612,14 +643,14 @@ async function onShare() {
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
-.dd-act:active {
+.dp-act:active {
   transform: scale(0.96);
 }
-.dd-act-edit {
+.dp-act-edit {
   background: linear-gradient(135deg, #ffd66b 0%, #ffc94d 100%);
   box-shadow: 0 6px 16px rgba(255, 180, 90, 0.4);
 }
-.dd-act-del {
+.dp-act-del {
   background: linear-gradient(135deg, #ffb6a3 0%, #ff9e80 100%);
   box-shadow: 0 6px 16px rgba(255, 150, 120, 0.35);
 }
@@ -664,56 +695,12 @@ async function onShare() {
   color: #c4a97a;
 }
 
-/* ═══ 右下角悬浮返回按钮：可爱黄边 ═══ */
-.fab-back {
-  position: fixed;
-  right: 22px;
-  bottom: 26px;
-  width: 58px;
-  height: 58px;
-  border: 1.5px solid #ffc94d;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 6px 18px rgba(255, 180, 90, 0.35);
-  cursor: pointer;
-  padding: 0;
-  z-index: 100;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.fab-back:active {
-  transform: scale(0.92);
-  box-shadow: 0 3px 10px rgba(255, 180, 90, 0.25);
-}
-/* "返回"二字：竖排焦糖字 */
-.fab-back-txt {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #a07c3a;
-  font-size: 14px;
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: 3px;
-  writing-mode: vertical-rl;
-}
-/* 黄色虚线内圈 */
-.fab-back::before {
-  content: '';
-  position: absolute;
-  inset: 4px;
-  border-radius: 50%;
-  border: 1.5px dashed rgba(255, 201, 77, 0.6);
-  pointer-events: none;
-}
-
 /* ═══ 海报预览 ═══ */
 .poster-mask {
   position: fixed;
   inset: 0;
   background: rgba(30, 22, 16, 0.72);
-  z-index: 2000;
+  z-index: 2500;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -756,7 +743,7 @@ async function onShare() {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 2500;
 }
 .preview-img {
   max-width: 100%;
@@ -775,20 +762,5 @@ async function onShare() {
   color: #fff;
   font-size: 14px;
   cursor: pointer;
-}
-
-/* ═══ PC 自适应（≥768px，手机端完全不受影响） ═══ */
-@media (min-width: 768px) {
-  .dd-topline,
-  .dd-photo,
-  .dd-head,
-  .dd-tags,
-  .dd-sec,
-  .dd-actions,
-  .empty-state {
-    max-width: 640px;
-    margin-left: auto;
-    margin-right: auto;
-  }
 }
 </style>

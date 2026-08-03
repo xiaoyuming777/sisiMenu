@@ -1,5 +1,5 @@
 <template>
-  <div class="dish-card" @click="$router.push('/dish/' + dish.id)">
+  <div class="dish-card" @click="openDishDetail(dish.id)">
     <div class="card-img-wrap">
       <van-image
         :src="dish.photo"
@@ -38,9 +38,13 @@
 </template>
 
 <script setup>
+import { inject } from 'vue'
+
 defineProps({
   dish: { type: Object, required: true }
 })
+
+const openDishDetail = inject('openDishDetail')
 
 function formatDate(d) {
   if (!d) return ''

@@ -53,7 +53,7 @@
     <van-cell-group inset class="section">
       <van-cell title="⭐ 最高评分" />
       <div class="section-body">
-        <div v-for="d in topRated" :key="d.id" class="top-item" @click="$router.push('/dish/' + d.id)">
+        <div v-for="d in topRated" :key="d.id" class="top-item" @click="openDishDetail(d.id)">
           <span>{{ d.name }}</span>
           <van-rate :model-value="5" :size="12" color="#f5a623" void-icon="star" void-color="#ede3d8" readonly />
         </div>
@@ -64,8 +64,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, inject } from 'vue'
 import { showToast } from 'vant'
+
+const openDishDetail = inject('openDishDetail')
 
 const stats = ref({ total: 0, totalCooked: 0, thisMonth: 0, byCook: [] })
 const allDishes = ref([])
