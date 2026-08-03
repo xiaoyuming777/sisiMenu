@@ -2,12 +2,29 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 const multer = require('multer');
+const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
 
 // 确保上传目录存在
 const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+// 照片压缩：最长边 1280px，JPEG 质量 82（同名覆盖，压缩失败保留原图）
+async function optimizePhoto(filePath) {
+  try {
+    const ext = path.extname(filePath).toLowerCase();
+    const format = ext === '.png' ? 'png' : ext === '.webp' ? 'webp' : 'jpeg';
+    let img = sharp(filePath, { failOn: 'none' }).rotate().resize({ width: 1280, withoutEnlargement: true });
+    if (format === 'jpeg') img = img.jpeg({ quality: 82, mozjpeg: true });
+    else if (format === 'png') img = img.png({ compressionLevel: 9 });
+    else img = img.webp({ quality: 82 });
+    const buf = await img.toBuffer();
+    fs.writeFileSync(filePath, buf);
+  } catch (e) {
+    console.error('照片压缩失败(保留原图):', e.message);
+  }
+}
 
 // multer 配置
 const storage = multer.diskStorage({
@@ -105,9 +122,12 @@ router.post('/', (req, res, next) => {
     }
     next();
   });
-}, (req, res) => {
+}, async (req, res) => {
   try {
     const { name, cook_date, cook_by, rating, difficulty, ingredients, note } = req.body;
+    if (req.file) {
+      await optimizePhoto(req.file.path); // 上传后自动压缩
+    }
     const photo = req.file ? '/uploads/' + req.file.filename : '';
 
     console.log('收到新增请求:', { name, cook_by, rating, difficulty, hasPhoto: !!req.file });
@@ -130,7 +150,7 @@ router.post('/', (req, res, next) => {
 });
 
 // PUT /api/dishes/:id — 修改菜品
-router.put('/:id', upload.single('photo'), (req, res) => {
+router.put('/:id', upload.single('photo'), async (req, res) => {
   try {
     const { name, cook_date, cook_by, rating, difficulty, ingredients, note } = req.body;
     const dish = db.prepare('SELECT * FROM dishes WHERE id = ?').get(req.params.id);
@@ -141,6 +161,7 @@ router.put('/:id', upload.single('photo'), (req, res) => {
       // 删除旧照片
       const oldPath = path.join(UPLOAD_DIR, path.basename(dish.photo));
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      await optimizePhoto(req.file.path); // 新照片自动压缩
       photo = '/uploads/' + req.file.filename;
     }
 

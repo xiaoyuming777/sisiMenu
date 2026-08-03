@@ -6,6 +6,7 @@
         :alt="dish.name"
         fit="cover"
         class="card-img"
+        lazy-load
         loading-icon="photo-o"
         error-icon="photo-o"
       />

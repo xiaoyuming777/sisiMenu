@@ -21,8 +21,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 静态文件：上传的图片
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// 静态文件：上传的图片（文件名含时间戳+随机数，天然不可变 → 强缓存1年）
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  maxAge: '365d',
+  immutable: true,
+}));
 
 // 静态文件：构建后的前端
 const distPath = path.join(__dirname, 'frontend', 'dist');

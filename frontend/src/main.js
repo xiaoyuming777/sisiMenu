@@ -6,9 +6,11 @@ import './assets/lxgw-wenkai.css'
 import 'vant/es/toast/style'
 import 'vant/es/dialog/style'
 import 'vant/es/image-preview/style'
+import { Lazyload } from 'vant'
 import App from './App.vue'
 import router from './router'
 
 const app = createApp(App)
 app.use(router)
+app.use(Lazyload, { lazyComponent: true })
 app.mount('#app')
