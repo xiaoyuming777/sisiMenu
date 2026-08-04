@@ -389,7 +389,7 @@ onDeactivated(() => {
 }
 .layout-2col .cute-card-img img {
   height: auto;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 3;
 }
 .layout-2col .cute-card-info {
   padding: 10px 12px 12px;
