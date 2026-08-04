@@ -149,10 +149,15 @@ watch(
 }
 /* 「换一个」「就吃这个」按钮上的小白熊/OK幽灵动图 */
 .ic-bear {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   vertical-align: -10px;
   object-fit: contain;
+}
+/* 「就吃这个」按钮的OK幽灵更大 */
+.ep-btn-primary .ic-bear {
+  width: 50px;
+  height: 50px;
 }
 
 /* ═══ 刊头 ═══ */
