@@ -16,7 +16,7 @@
       </footer>
     </main>
 
-    <!-- 右下角悬浮新增按钮（蜜桃渐变星星风，详情页隐藏） -->
+    <!-- 右下角悬浮新增按钮（横版胶囊蜜桃渐变，详情页隐藏） -->
     <button
       v-if="!$route.path.startsWith('/dish')"
       class="fab-add"
@@ -28,7 +28,7 @@
       <span class="fab-heart">❤️</span>
     </button>
 
-    <!-- 上新按钮旁的小鸡毛贴纸（动态GIF） -->
+    <!-- 小鸡毛贴纸：悬浮在按钮正上方（动态GIF） -->
     <img
       v-if="!$route.path.startsWith('/dish')"
       class="fab-pet"
@@ -180,62 +180,61 @@ body {
 </style>
 
 <style scoped>
-/* ═══ 右下角悬浮新增按钮：蜜桃渐变星星风（思思设计） ═══ */
+/* ═══ 右下角悬浮新增按钮：横版胶囊蜜桃渐变 ═══ */
 .fab-add {
   position: fixed;
-  right: 28px;
-  bottom: 32px;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
+  right: 24px;
+  bottom: 30px;
+  width: 148px;
+  height: 56px;
+  border-radius: 99px;
   background-image: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 60%), linear-gradient(145deg, #ffb3a6, #ff8a7a);
   border: none;
   box-shadow: 0 8px 24px rgba(255, 138, 122, 0.5), 0 4px 12px rgba(255, 107, 89, 0.25);
   cursor: pointer;
-  padding: 0;
+  padding: 0 18px;
   z-index: 100;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
 }
 .fab-add:hover {
-  transform: scale(1.1) translateY(-4px);
+  transform: scale(1.06) translateY(-3px);
   box-shadow: 0 14px 32px rgba(255, 138, 122, 0.6), 0 6px 16px rgba(255, 107, 89, 0.3);
   background-image: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 60%), linear-gradient(145deg, #ffbfb2, #ff8f7a);
 }
 .fab-add:active {
-  transform: scale(0.92) translateY(2px);
+  transform: scale(0.94) translateY(1px);
   box-shadow: 0 4px 12px rgba(255, 138, 122, 0.4);
 }
 
 /* 星星：浮动动画 */
 .fab-star {
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1;
-  margin-bottom: 1px;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08));
   animation: fab-float-star 3s ease-in-out infinite;
 }
 
 /* 文字：放大加粗，深棕与星星协调 */
 .fab-text {
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 2px;
   color: #4d2e2a;
   text-shadow: 0 1px 4px rgba(255, 255, 255, 0.6), 0 0 12px rgba(255, 220, 210, 0.3);
-  line-height: 1.2;
-  margin-top: -1px;
+  line-height: 1;
 }
 
 /* 爱心点缀：跳动动画 */
 .fab-heart {
   position: absolute;
-  top: 6px;
-  right: 8px;
-  font-size: 16px;
+  top: 4px;
+  right: 12px;
+  font-size: 14px;
   line-height: 1;
   filter: drop-shadow(0 2px 6px rgba(255, 215, 0, 0.5));
   animation: fab-pop-heart 2.4s ease-in-out infinite;
@@ -258,13 +257,13 @@ body {
   100% { transform: scale(1) rotate(0deg); }
 }
 
-/* ═══ 上新按钮旁的小狗贴纸 ═══ */
+/* ═══ 小鸡毛贴纸：悬浮在按钮正上方 ═══ */
 .fab-pet {
   position: fixed;
-  right: 88px;
-  bottom: 40px;
-  width: 64px;
-  height: 64px;
+  right: 67px;
+  bottom: 88px;
+  width: 62px;
+  height: 62px;
   pointer-events: none;
   z-index: 99;
   animation: fab-pet-float 3.2s ease-in-out infinite;
@@ -278,47 +277,57 @@ body {
 /* 响应式：小屏缩小 */
 @media (max-width: 480px) {
   .fab-add {
-    width: 70px;
-    height: 70px;
+    width: 100px;
+    height: 40px;
     bottom: 24px;
     right: 20px;
+    padding: 0 12px;
+    gap: 4px;
   }
   .fab-pet {
-    right: 72px;
-    bottom: 30px;
-    width: 56px;
-    height: 56px;
+    right: 20px;
+    bottom: 42px;
+    width: 100px;
+    height: 100px;
   }
   .fab-star {
-    font-size: 21px;
+    font-size: 16px;
   }
   .fab-text {
     font-size: 15px;
+    letter-spacing: 1px;
   }
   .fab-heart {
-    font-size: 14px;
-    top: 4px;
-    right: 6px;
+    font-size: 11px;
+    top: 2px;
+    right: 8px;
   }
 }
 @media (max-width: 380px) {
   .fab-add {
-    width: 60px;
-    height: 60px;
+    width: 88px;
+    height: 38px;
     bottom: 18px;
     right: 16px;
+    padding: 0 10px;
+  }
+  .fab-pet {
+    right: 16px;
+    bottom: 34px;
+    width: 88px;
+    height: 88px;
   }
   .fab-star {
-    font-size: 18px;
+    font-size: 15px;
   }
   .fab-text {
     font-size: 13px;
     letter-spacing: 0.5px;
   }
   .fab-heart {
-    font-size: 12px;
-    top: 2px;
-    right: 4px;
+    font-size: 10px;
+    top: 1px;
+    right: 6px;
   }
 }
 </style>
