@@ -9,6 +9,7 @@
 
       <div class="cute-title-row">
         <h1 class="cute-title">思思大王的菜单</h1>
+        <img class="cute-chef-bear" src="/deco/chef-bear.png" alt="" />
       </div>
 
       <!-- 统计：小胶囊 + 布局切换 -->
@@ -239,6 +240,19 @@ onDeactivated(() => {
   align-items: center;
   gap: 14px;
   margin-top: 20px;
+}
+/* 熊厨师：标题右侧装饰 */
+.cute-chef-bear {
+  width: 62px;
+  height: 62px;
+  object-fit: contain;
+  flex-shrink: 0;
+  animation: chef-bear-bounce 2.6s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(180, 120, 80, 0.18));
+}
+@keyframes chef-bear-bounce {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-5px) rotate(2deg); }
 }
 .cute-title {
   flex: 1;
