@@ -53,14 +53,14 @@
       <!-- ═══ 按钮区 ═══ -->
       <div v-if="dishes.length > 0" class="ep-actions">
         <button class="ep-btn ep-btn-ghost" @click="startRoll" :disabled="rolling">
-          <img class="ic" src="/icons/shuffle.svg" alt="" /> {{ rolling ? '翻牌中...' : '换一个' }}
+          <img class="ic ic-bear" src="/deco/xiaobai-bear-big.gif" alt="" /> {{ rolling ? '翻牌中...' : '换一个' }}
         </button>
         <button
           class="ep-btn ep-btn-primary"
           :disabled="rolling || !result"
           @click="emitPick"
         >
-          <img class="ic" src="/icons/silverware.svg" alt="" /> 就吃这个
+          <img class="ic ic-bear" src="/deco/xiaobai-ok.gif" alt="" /> 就吃这个
         </button>
       </div>
 
@@ -146,6 +146,13 @@ watch(
   height: 14px;
   vertical-align: -2px;
   display: inline-block;
+}
+/* 「换一个」按钮上的小白熊动图 */
+.ic-bear {
+  width: 20px;
+  height: 20px;
+  vertical-align: -4px;
+  object-fit: contain;
 }
 
 /* ═══ 刊头 ═══ */
