@@ -1,8 +1,10 @@
 <template>
   <van-popup
     :show="show"
-    position="bottom"
-    :style="{ height: '92%', borderRadius: '24px 24px 0 0' }"
+    :position="isDesktop ? 'center' : 'bottom'"
+    :style="isDesktop
+      ? { width: 'min(680px, 94vw)', height: 'min(760px, 88vh)', borderRadius: '24px' }
+      : { height: '92%', borderRadius: '24px 24px 0 0' }"
     @update:show="$emit('update:show', $event)"
   >
     <div class="detail-popup">
@@ -93,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, computed, inject, watch } from 'vue'
+import { ref, computed, inject, watch, onMounted, onBeforeUnmount } from 'vue'
 import { showConfirmDialog, showToast } from 'vant'
 
 const props = defineProps({
@@ -101,6 +103,13 @@ const props = defineProps({
   id: { type: [Number, String], default: null },
 })
 const emit = defineEmits(['update:show'])
+
+// PC（≥768px）居中弹窗，手机端底部抽屉（与项目既有断点一致）
+const desktopQuery = window.matchMedia('(min-width: 768px)')
+const isDesktop = ref(desktopQuery.matches)
+function onDesktopChange(e) { isDesktop.value = e.matches }
+onMounted(() => desktopQuery.addEventListener('change', onDesktopChange))
+onBeforeUnmount(() => desktopQuery.removeEventListener('change', onDesktopChange))
 
 const openDishForm = inject('openDishForm')
 const dataVersion = inject('dataVersion', null)
