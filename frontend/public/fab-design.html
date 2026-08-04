@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上新按钮设计 - 放大版</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #fffbf0;
+  color: #8a6d4b;
+  padding: 40px 20px 60px;
+}
+h1 { font-size: 26px; text-align: center; letter-spacing: 3px; margin-bottom: 8px; }
+.sub { font-size: 14px; text-align: center; color: #c4a97a; letter-spacing: 2px; margin-bottom: 40px; }
+
+/* 每个方案：大卡片，中间大按钮 */
+.case {
+  background: #fffdf9;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(255, 180, 120, 0.18);
+  padding: 30px 24px 24px;
+  margin-bottom: 32px;
+  text-align: center;
+  position: relative;
+}
+.case-num {
+  position: absolute;
+  top: 16px; left: 20px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd66b, #ffc94d);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(255,180,90,.35);
+}
+.case-name { font-size: 20px; font-weight: 800; margin-top: 4px; margin-bottom: 6px; }
+.case-desc { font-size: 13px; color: #b08d55; letter-spacing: 1px; margin-bottom: 26px; }
+
+/* 舞台：奶油黄背景，模拟首页 */
+.stage {
+  width: 320px;
+  height: 260px;
+  margin: 0 auto;
+  background: #fffbf0;
+  border-radius: 20px;
+  border: 2px solid #f0dfb8;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ═══ 方案1：圆形+加号+小字 ═══ */
+.fab-a {
+  width: 96px; height: 96px; border-radius: 50%;
+  background: linear-gradient(135deg, #ffd66b 0%, #ffc94d 100%);
+  box-shadow: 0 12px 28px rgba(255, 180, 90, 0.5);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  position: relative;
+}
+.fab-a .plus { font-size: 38px; font-weight: 700; color: #fff; line-height: 1; }
+.fab-a .txt { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: 3px; }
+.fab-a .ring {
+  position: absolute; inset: 6px; border-radius: 50%;
+  border: 2px dashed rgba(255,255,255,.7); pointer-events: none;
+}
+
+/* ═══ 方案2：横排胶囊 ═══ */
+.fab-b {
+  height: 76px; padding: 0 34px; border-radius: 99px;
+  background: linear-gradient(135deg, #ffd66b 0%, #ffc94d 100%);
+  box-shadow: 0 12px 28px rgba(255, 180, 90, 0.5);
+  display: flex; align-items: center; gap: 10px;
+}
+.fab-b .plus { font-size: 30px; font-weight: 700; color: #fff; line-height: 1; }
+.fab-b .txt { font-size: 21px; font-weight: 700; color: #fff; letter-spacing: 3px; }
+
+/* ═══ 方案3：印章风圆角方 ═══ */
+.fab-c {
+  width: 100px; height: 100px; border-radius: 26px;
+  background: #fffdf9;
+  border: 3px solid #f0dfb8;
+  box-shadow: 0 10px 24px rgba(180, 140, 80, 0.2);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+}
+.fab-c .plus { font-size: 30px; font-weight: 700; color: #b08d55; line-height: 1; }
+.fab-c .txt { font-size: 14px; font-weight: 700; color: #b08d55; letter-spacing: 3px; }
+
+/* ═══ 方案4：金圈+铅笔 ═══ */
+.fab-d {
+  width: 100px; height: 100px; border-radius: 50%;
+  background: #fffdf9;
+  border: 4px solid #ffc94d;
+  box-shadow: 0 12px 28px rgba(255, 180, 90, 0.35);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+}
+.fab-d .pencil { width: 34px; height: 34px; color: #e8a33d; }
+.fab-d .txt { font-size: 12px; font-weight: 700; color: #e8a33d; letter-spacing: 2px; }
+
+/* ═══ 方案5：现有样式（参照） ═══ */
+.fab-e {
+  width: 96px; height: 96px; border-radius: 50%;
+  background: linear-gradient(135deg, #ffd66b 0%, #ffc94d 100%);
+  box-shadow: 0 12px 28px rgba(255, 180, 90, 0.5);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.fab-e .ring {
+  position: absolute; inset: 6px; border-radius: 50%;
+  border: 2px dashed rgba(255,255,255,.7); pointer-events: none;
+}
+.fab-e .txt {
+  writing-mode: vertical-rl;
+  color: #fff; font-size: 16px; font-weight: 700; letter-spacing: 4px;
+}
+
+.tag-now {
+  position: absolute; top: 16px; right: 20px;
+  font-size: 11px; color: #d4b98a; letter-spacing: 1px;
+  border: 1px solid #f0dfb8; border-radius: 99px; padding: 4px 12px;
+}
+</style>
+</head>
+<body>
+<h1>「上新」按钮 · 放大对比</h1>
+<p class="sub">每个方案放大 2 倍展示细节</p>
+
+<div class="case">
+  <span class="case-num">0</span>
+  <span class="tag-now">当前版本</span>
+  <div class="case-name">现在用的</div>
+  <div class="case-desc">蜂蜜黄圆 + 竖排「上新」白字 + 虚线内圈</div>
+  <div class="stage">
+    <button class="fab-e"><span class="ring"></span><span class="txt">上新</span></button>
+  </div>
+</div>
+
+<div class="case">
+  <span class="case-num">1</span>
+  <div class="case-name">圆形 + 加号 + 小字</div>
+  <div class="case-desc">保留虚线内圈，大加号替代竖排文字</div>
+  <div class="stage">
+    <button class="fab-a"><span class="ring"></span><span class="plus">＋</span><span class="txt">上新</span></button>
+  </div>
+</div>
+
+<div class="case">
+  <span class="case-num">2</span>
+  <div class="case-name">横排胶囊「＋ 记一道菜」</div>
+  <div class="case-desc">长条胶囊，文字直白，动作感强</div>
+  <div class="stage">
+    <button class="fab-b"><span class="plus">＋</span><span class="txt">记一道菜</span></button>
+  </div>
+</div>
+
+<div class="case">
+  <span class="case-num">3</span>
+  <div class="case-name">印章风圆角方</div>
+  <div class="case-desc">米白底 + 浅金描边，复古印章感</div>
+  <div class="stage">
+    <button class="fab-c"><span class="plus">＋</span><span class="txt">上新</span></button>
+  </div>
+</div>
+
+<div class="case">
+  <span class="case-num">4</span>
+  <div class="case-name">金圈 + 铅笔</div>
+  <div class="case-desc">蜂蜜黄描边圆 + 铅笔图标，记录意象</div>
+  <div class="stage">
+    <button class="fab-d">
+      <svg class="pencil" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M20.71 4.04c.39-.39.39-1.03 0-1.42L18.37.29C17.98-.1 17.35-.1 16.96.29L8 9.25V12h2.75l7.96-7.96zM2 17.25V21h3.75L17.81 8.94l-3.75-3.75L2 17.25z"/>
+      </svg>
+      <span class="txt">记一道菜</span>
+    </button>
+  </div>
+</div>
+</body>
+</html>

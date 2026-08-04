@@ -16,14 +16,16 @@
       </footer>
     </main>
 
-    <!-- 右下角悬浮新增按钮（印章风，详情页隐藏） -->
+    <!-- 右下角悬浮新增按钮（蜜桃渐变星星风，详情页隐藏） -->
     <button
       v-if="!$route.path.startsWith('/dish')"
       class="fab-add"
       @click="openAddPopup"
       aria-label="记一道菜"
     >
-      <span class="fab-plus">上新</span>
+      <img class="fab-star" src="/icons/star-3d.svg" alt="" />
+      <span class="fab-text">上新</span>
+      <img class="fab-heart" src="/icons/heart-3d.svg" alt="" />
     </button>
 
     <!-- 新增/编辑弹出层 -->
@@ -170,47 +172,128 @@ body {
 </style>
 
 <style scoped>
-/* ═══ 右下角悬浮新增按钮：可爱蜂蜜黄 ═══ */
+/* ═══ 右下角悬浮新增按钮：蜜桃渐变星星风（思思设计） ═══ */
 .fab-add {
   position: fixed;
-  right: 22px;
-  bottom: 26px;
-  width: 58px;
-  height: 58px;
-  border: none;
+  right: 28px;
+  bottom: 32px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ffd66b 0%, #ffc94d 100%);
-  box-shadow: 0 8px 20px rgba(255, 180, 90, 0.5);
+  background: linear-gradient(145deg, #ffb3a6, #ff8a7a);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 24px rgba(255, 138, 122, 0.5), 0 4px 12px rgba(255, 107, 89, 0.25);
+  background-image: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
   cursor: pointer;
   padding: 0;
   z-index: 100;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.fab-add:active {
-  transform: scale(0.92);
-  box-shadow: 0 4px 12px rgba(255, 180, 90, 0.4);
-}
-/* "上新"二字：竖排白字 */
-.fab-plus {
-  position: absolute;
-  inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: 3px;
-  writing-mode: vertical-rl;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
 }
-/* 白色虚线内圈，可爱点缀 */
-.fab-add::before {
-  content: '';
+.fab-add:hover {
+  transform: scale(1.1) translateY(-4px);
+  box-shadow: 0 14px 32px rgba(255, 138, 122, 0.6), 0 6px 16px rgba(255, 107, 89, 0.3);
+  background: linear-gradient(145deg, #ffbfb2, #ff8f7a);
+}
+.fab-add:active {
+  transform: scale(0.92) translateY(2px);
+  box-shadow: 0 4px 12px rgba(255, 138, 122, 0.4);
+}
+
+/* 星星：浮动动画 */
+.fab-star {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 1px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08));
+  animation: fab-float-star 3s ease-in-out infinite;
+}
+
+/* 文字：放大加粗，深棕与星星协调 */
+.fab-text {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #4d2e2a;
+  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.6), 0 0 12px rgba(255, 220, 210, 0.3);
+  line-height: 1.2;
+  margin-top: -1px;
+}
+
+/* 爱心点缀：跳动动画 */
+.fab-heart {
   position: absolute;
-  inset: 4px;
-  border-radius: 50%;
-  border: 1.5px dashed rgba(255, 255, 255, 0.75);
+  top: 6px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  filter: drop-shadow(0 2px 6px rgba(255, 215, 0, 0.5));
+  animation: fab-pop-heart 2.4s ease-in-out infinite;
+  transform-origin: center;
   pointer-events: none;
+}
+
+@keyframes fab-float-star {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(6deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+
+@keyframes fab-pop-heart {
+  0% { transform: scale(1) rotate(0deg); }
+  20% { transform: scale(1.4) rotate(-10deg); }
+  40% { transform: scale(0.9) rotate(6deg); }
+  60% { transform: scale(1.15) rotate(-3deg); }
+  80% { transform: scale(1) rotate(0deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* 响应式：小屏缩小 */
+@media (max-width: 480px) {
+  .fab-add {
+    width: 70px;
+    height: 70px;
+    bottom: 24px;
+    right: 20px;
+  }
+  .fab-star {
+    width: 21px;
+    height: 21px;
+  }
+  .fab-text {
+    font-size: 15px;
+  }
+  .fab-heart {
+    font-size: 15px;
+    top: 4px;
+    right: 6px;
+    width: 14px;
+    height: 14px;
+  }
+}
+@media (max-width: 380px) {
+  .fab-add {
+    width: 60px;
+    height: 60px;
+    bottom: 18px;
+    right: 16px;
+  }
+  .fab-star {
+    width: 18px;
+    height: 18px;
+  }
+  .fab-text {
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+  .fab-heart {
+    width: 12px;
+    height: 12px;
+    top: 2px;
+    right: 4px;
+  }
 }
 </style>
