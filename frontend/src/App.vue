@@ -286,7 +286,7 @@ body {
   }
   .fab-pet {
     right: 20px;
-    bottom: 42px;
+    bottom: 76px;
     width: 100px;
     height: 100px;
   }
@@ -313,7 +313,7 @@ body {
   }
   .fab-pet {
     right: 16px;
-    bottom: 34px;
+    bottom: 68px;
     width: 88px;
     height: 88px;
   }
