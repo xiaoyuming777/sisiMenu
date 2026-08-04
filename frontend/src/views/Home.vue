@@ -83,8 +83,8 @@ const dishes = ref([])
 const stats = ref({ total: 0, totalCooked: 0, thisMonth: 0 })
 const loading = ref(true)
 
-// 布局模式：1col 单列 / 2col 双列（记住用户选择）
-const layout = ref(localStorage.getItem('menuLayout') || '1col')
+// 布局模式：1col 单列 / 2col 双列（记住用户选择，默认双列）
+const layout = ref(localStorage.getItem('menuLayout') || '2col')
 function setLayout(m) {
   layout.value = m
   localStorage.setItem('menuLayout', m)
