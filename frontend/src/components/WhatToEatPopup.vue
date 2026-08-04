@@ -39,7 +39,6 @@
           <transition name="ep-pop">
             <div v-if="!rolling && result" class="ep-result">
               <div class="ep-result-tag"><img class="ic" src="/icons/star.svg" alt="" /> 今日份幸运</div>
-              <div class="ep-result-name">{{ result.name }}</div>
             </div>
           </transition>
         </template>
@@ -250,15 +249,6 @@ watch(
   padding: 6px 16px;
   border-radius: 99px;
   box-shadow: 0 4px 12px rgba(255, 180, 90, 0.45);
-}
-.ep-result-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: #b08d55;
-  background: #fff;
-  padding: 4px 14px;
-  border-radius: 99px;
-  box-shadow: 0 3px 10px rgba(180, 140, 80, 0.15);
 }
 
 .ep-pop-enter-active {
