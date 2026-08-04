@@ -265,8 +265,6 @@ body {
   bottom: 40px;
   width: 64px;
   height: 64px;
-  border-radius: 50%;
-  mix-blend-mode: lighten;
   pointer-events: none;
   z-index: 99;
   animation: fab-pet-float 3.2s ease-in-out infinite;
