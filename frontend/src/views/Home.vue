@@ -447,10 +447,10 @@ onDeactivated(() => {
   width: 17px;
   height: 17px;
 }
-/* 小白举奶茶：按钮左侧装饰 */
+/* 流口水小白：按钮左侧装饰 */
 .eat-btn-dog {
-  width: 26px;
-  height: 26px;
+  width: 52px;
+  height: 52px;
   object-fit: contain;
   filter: drop-shadow(0 2px 5px rgba(180, 120, 80, 0.25));
 }
