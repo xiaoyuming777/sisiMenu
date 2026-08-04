@@ -36,7 +36,7 @@
 
       <!-- 今天吃什么：翻牌子入口 -->
       <button class="eat-btn" @click="openEat" aria-label="今天吃什么">
-        <img class="ic" src="/icons/dice.svg" alt="" />
+        <img class="eat-btn-dog" src="/deco/xiaobai-milktea.png" alt="" />
         今天吃什么
         <span class="eat-btn-arrow">→</span>
       </button>
@@ -443,6 +443,13 @@ onDeactivated(() => {
 .eat-btn .ic {
   width: 17px;
   height: 17px;
+}
+/* 小白举奶茶：按钮左侧装饰 */
+.eat-btn-dog {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 5px rgba(180, 120, 80, 0.25));
 }
 .eat-btn:active {
   transform: scale(0.97);
