@@ -95,56 +95,48 @@ onMounted(() => {
 </script>
 
 <style>
-/* ═══ 全局 Vant 主题色覆盖 — 墨色杂志风 ═══ */
+/* ═══ 全局 Vant 主题色覆盖 — 奶油黄风 ═══ */
 :root {
-  --van-primary-color: #2d241f;
+  --van-primary-color: #8a6d4b;
   --van-danger-color: #c8563a;
   --van-success-color: #7b8c6f;
-  --van-warning-color: #b58a4a;
-
-  /* 导航栏 */
-  --van-nav-bar-background: #fbf8f3;
-  --van-nav-bar-text-color: #2d241f;
-  --van-nav-bar-icon-color: #2d241f;
+  --van-warning-color: #e8a33d;
 
   /* 表单组件 */
-  --van-field-label-color: #8a8177;
-  --van-field-input-text-color: #2d241f;
-  --van-field-placeholder-text-color: #d8cfc5;
-  --van-cell-background: #fbf8f3;
-
-  /* 搜索 */
-  --van-search-background: #fbf8f3;
+  --van-field-label-color: #b08d55;
+  --van-field-input-text-color: #8a6d4b;
+  --van-field-placeholder-text-color: #d4b98a;
+  --van-cell-background: #fffdf9;
 
   /* 按钮 */
-  --van-button-primary-background: #2d241f;
-  --van-button-primary-border-color: #2d241f;
-  --van-button-border-radius: 2px;
+  --van-button-primary-background: #8a6d4b;
+  --van-button-primary-border-color: #8a6d4b;
+  --van-button-border-radius: 99px;
 
   /* 标签 */
-  --van-tag-primary-color: #2d241f;
+  --van-tag-primary-color: #8a6d4b;
 
   /* 评分 */
-  --van-rate-icon-full-color: #b58a4a;
-  --van-rate-icon-void-color: #e8e2da;
+  --van-rate-icon-full-color: #ffc94d;
+  --van-rate-icon-void-color: #f0dfb8;
 
   /* 弹窗 */
   --van-dialog-width: 300px;
-  --van-dialog-radius: 2px;
-  --van-dialog-background: #fbf8f3;
+  --van-dialog-radius: 16px;
+  --van-dialog-background: #fffdf9;
   --van-dialog-header-font-weight: 600;
   --van-dialog-header-font-size: 17px;
-  --van-dialog-message-color: #8a8177;
+  --van-dialog-message-color: #b08d55;
   --van-dialog-confirm-button-text-color: #c8563a;
-  --van-dialog-cancel-button-text-color: #b5aca1;
+  --van-dialog-cancel-button-text-color: #d4b98a;
 }
 
 /* 全局样式 */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background: #fbf8f3;
-  color: #2d241f;
+  background: #fffbf0;
+  color: #8a6d4b;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }

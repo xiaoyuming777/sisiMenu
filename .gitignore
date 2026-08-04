@@ -15,6 +15,7 @@ server.log
 ssl/
 
 # 备份 / 临时文件
+backups/
 postcss.config.js.bak
 .DS_Store
 *.swp

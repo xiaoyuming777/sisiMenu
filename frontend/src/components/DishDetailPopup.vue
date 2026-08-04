@@ -741,7 +741,7 @@ async function onShare() {
 }
 .poster-dl:active {
   background: #fff;
-  color: #2d241f;
+  color: #8a6d4b;
 }
 
 /* ═══ 图片预览 ═══ */
