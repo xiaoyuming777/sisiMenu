@@ -37,11 +37,12 @@
 
           <!-- 标题区 -->
           <div class="dp-head">
-            <!-- 小白 Good：左侧探头点赞 -->
-            <img class="dp-good dp-good-left" src="/deco/xiaobai-good.gif" alt="" />
             <h1 class="dp-name">{{ dish.name }}</h1>
-            <!-- 小鸡毛 Good：右侧探头点赞 -->
-            <img class="dp-good dp-good-right" src="/deco/xiaojimao-good.gif" alt="" />
+            <!-- 两只 Good 小狗：标题右侧并排点赞 -->
+            <span class="dp-good-group">
+              <img class="dp-good" src="/deco/xiaobai-good.gif" alt="" />
+              <img class="dp-good" src="/deco/xiaojimao-good.gif" alt="" />
+            </span>
           </div>
 
           <!-- 胶囊标签组 -->
@@ -552,7 +553,7 @@ async function onShare() {
 /* ═══ 标题区 ═══ */
 .dp-head {
   position: relative;
-  padding: 26px 24px 0;
+  padding: 30px 24px 0;
 }
 .dp-name {
   font-size: 28px;
@@ -561,22 +562,25 @@ async function onShare() {
   letter-spacing: 2px;
   margin: 0;
   line-height: 1.3;
+  padding-right: 165px;
 }
-/* 两只 Good 小狗：标题两侧探头点赞，俏皮对称 */
-.dp-good {
+/* 两只 Good 小狗：标题右侧并排探头点赞 */
+.dp-good-group {
   position: absolute;
-  top: -24px;
-  width: 68px;
-  height: 68px;
-  object-fit: contain;
+  right: 8px;
+  top: -20px;
+  line-height: 0;
   pointer-events: none;
+}
+.dp-good {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  display: inline-block;
   filter: drop-shadow(0 3px 6px rgba(180, 120, 90, 0.15));
 }
-.dp-good-left {
-  left: 2px;
-}
-.dp-good-right {
-  right: 2px;
+.dp-good + .dp-good {
+  margin-left: -18px;
 }
 
 /* 胶囊标签组 */
