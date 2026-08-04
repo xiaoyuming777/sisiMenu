@@ -22,6 +22,8 @@
 
       <!-- ═══ 抽选区 ═══ -->
       <div class="ep-stage" :class="{ 'is-result': !rolling && result }">
+        <!-- 魔法小熊：左上角探头施法（与右上角幽灵对称） -->
+        <img class="ep-bear" src="/deco/bear-magic.gif" alt="" />
         <!-- 像素小幽灵：右上角探头观战 -->
         <img class="ep-ghost" src="/deco/ghost-piko.gif" alt="" />
 
@@ -195,6 +197,18 @@ watch(
 .ep-stage {
   position: relative;
   min-height: 300px;
+}
+/* 魔法小熊：左上角探头施法，与幽灵对称 */
+.ep-bear {
+  position: absolute;
+  left: -14px;
+  top: -24px;
+  width: 68px;
+  height: 68px;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 3;
+  filter: drop-shadow(0 4px 8px rgba(180, 120, 90, 0.18));
 }
 /* 像素小幽灵：右上角探头观战，俏皮点缀 */
 .ep-ghost {
