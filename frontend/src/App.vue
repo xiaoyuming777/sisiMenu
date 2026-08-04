@@ -1,24 +1,10 @@
 <template>
   <div class="app-container">
-    <!-- 顶部导航栏（首页/详情页隐藏：各自有杂志头部自足） -->
-    <van-nav-bar
-      v-if="!$route.path.startsWith('/dish') && $route.path !== '/'"
-      fixed
-      placeholder
-      :left-arrow="$route.path !== '/search'"
-      :title="navTitle"
-      @click-left="$router.back()"
-    >
-      <template #title>
-        <span class="nav-title">🍳 思思大王的菜单</span>
-      </template>
-    </van-nav-bar>
-
-    <!-- 页面内容 -->
+    <!-- 页面内容（只有首页一个路由，其余功能均为弹窗） -->
     <main class="app-main">
       <router-view v-slot="{ Component }">
         <transition name="page" mode="out-in">
-          <keep-alive include="Home,Search">
+          <keep-alive include="Home">
             <component :is="Component" />
           </keep-alive>
         </transition>
@@ -54,12 +40,11 @@
 </template>
 
 <script setup>
-import { computed, ref, provide, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, provide, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import DishFormPopup from './components/DishFormPopup.vue'
 import DishDetailPopup from './components/DishDetailPopup.vue'
 
-const route = useRoute()
 const router = useRouter()
 
 const popupShow = ref(false)
@@ -70,7 +55,7 @@ const popupEditId = ref(null)
 const detailShow = ref(false)
 const detailId = ref(null)
 
-// 数据版本信号：新增/编辑/删除成功后 +1，缓存页面（Home/Search）监听到后静默刷新
+// 数据版本信号：新增/编辑/删除成功后 +1，缓存页面（Home）监听到后静默刷新
 const dataVersion = ref(0)
 provide('dataVersion', dataVersion)
 
@@ -106,15 +91,6 @@ onMounted(() => {
     detailShow.value = true
     router.replace('/')
   }
-})
-
-const navTitle = computed(() => {
-  const map = {
-    '/search': '发现',
-    '/stats': '统计',
-  }
-  const base = route.path.split('/')[1]
-  return map['/' + base] || '思思大王的菜单'
 })
 </script>
 
@@ -202,12 +178,6 @@ body {
 </style>
 
 <style scoped>
-.nav-title {
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: 1px;
-}
-
 /* ═══ 右下角悬浮新增按钮：可爱蜂蜜黄 ═══ */
 .fab-add {
   position: fixed;
