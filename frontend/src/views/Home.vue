@@ -72,10 +72,11 @@
         </div>
       </article>
 
-      <!-- 页脚 -->
-      <footer class="cute-footer">
-        <p>未完待续 <img class="ic ic-inline" src="/icons/cupcake.svg" alt="" /></p>
-      </footer>
+      <!-- 列表底部：Good 小狗并排居中 -->
+      <div class="cute-good-row">
+        <img class="cute-good" src="/deco/xiaobai-good.gif" alt="" />
+        <img class="cute-good" src="/deco/xiaojimao-good.gif" alt="" />
+      </div>
     </div>
 
     <!-- 今天吃什么：翻牌子 -->
@@ -404,20 +405,22 @@ onDeactivated(() => {
 .layout-2col .cute-card-tags {
   display: none;
 }
-.layout-2col .cute-footer {
+.layout-2col .cute-good-row {
   grid-column: 1 / -1;
 }
 
-/* ═══ 页脚 ═══ */
-.cute-footer {
-  padding: 20px 0 8px;
-  text-align: center;
+/* ═══ 列表底部 Good 小狗 ═══ */
+.cute-good-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  padding: 24px 0 10px;
 }
-.cute-footer p {
-  font-size: 11px;
-  letter-spacing: 4px;
-  color: #d4b98a;
-  margin: 0;
+.cute-good {
+  width: 84px;
+  height: auto;
+  object-fit: contain;
 }
 
 /* ═══ 今天吃什么：翻牌子入口按钮 ═══ */
@@ -544,7 +547,7 @@ onDeactivated(() => {
   .cute-list .cute-card-tags {
     display: none;
   }
-  .cute-list .cute-footer {
+  .cute-list .cute-good-row {
     grid-column: 1 / -1;
   }
   /* 悬停：图片放大（鼠标移入） */
