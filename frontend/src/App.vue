@@ -28,6 +28,14 @@
       <span class="fab-heart">❤️</span>
     </button>
 
+    <!-- 上新按钮旁的小狗贴纸（动态GIF，黑底透明处理） -->
+    <img
+      v-if="!$route.path.startsWith('/dish')"
+      class="fab-pet"
+      src="/deco/sticker-bear.gif"
+      alt=""
+    />
+
     <!-- 新增/编辑弹出层 -->
     <DishFormPopup
       v-model:show="popupShow"
@@ -250,6 +258,25 @@ body {
   100% { transform: scale(1) rotate(0deg); }
 }
 
+/* ═══ 上新按钮旁的小狗贴纸 ═══ */
+.fab-pet {
+  position: fixed;
+  right: 88px;
+  bottom: 40px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  mix-blend-mode: lighten;
+  pointer-events: none;
+  z-index: 99;
+  animation: fab-pet-float 3.2s ease-in-out infinite;
+  filter: drop-shadow(0 4px 10px rgba(180, 120, 90, 0.18));
+}
+@keyframes fab-pet-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
 /* 响应式：小屏缩小 */
 @media (max-width: 480px) {
   .fab-add {
@@ -257,6 +284,12 @@ body {
     height: 70px;
     bottom: 24px;
     right: 20px;
+  }
+  .fab-pet {
+    right: 72px;
+    bottom: 30px;
+    width: 56px;
+    height: 56px;
   }
   .fab-star {
     font-size: 21px;
