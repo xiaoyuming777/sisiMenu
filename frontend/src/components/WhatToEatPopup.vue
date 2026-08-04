@@ -147,11 +147,11 @@ watch(
   vertical-align: -2px;
   display: inline-block;
 }
-/* 「换一个」按钮上的小白熊动图 */
+/* 「换一个」「就吃这个」按钮上的小白熊/OK幽灵动图 */
 .ic-bear {
-  width: 20px;
-  height: 20px;
-  vertical-align: -4px;
+  width: 40px;
+  height: 40px;
+  vertical-align: -10px;
   object-fit: contain;
 }
 
