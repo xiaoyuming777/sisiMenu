@@ -23,9 +23,9 @@
       @click="openAddPopup"
       aria-label="记一道菜"
     >
-      <img class="fab-star" src="/icons/star-3d.svg" alt="" />
+      <span class="fab-star">⭐</span>
       <span class="fab-text">上新</span>
-      <img class="fab-heart" src="/icons/heart-3d.svg" alt="" />
+      <span class="fab-heart">❤️</span>
     </button>
 
     <!-- 新增/编辑弹出层 -->
@@ -180,10 +180,9 @@ body {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(145deg, #ffb3a6, #ff8a7a);
+  background-image: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 60%), linear-gradient(145deg, #ffb3a6, #ff8a7a);
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 8px 24px rgba(255, 138, 122, 0.5), 0 4px 12px rgba(255, 107, 89, 0.25);
-  background-image: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
   cursor: pointer;
   padding: 0;
   z-index: 100;
@@ -196,7 +195,7 @@ body {
 .fab-add:hover {
   transform: scale(1.1) translateY(-4px);
   box-shadow: 0 14px 32px rgba(255, 138, 122, 0.6), 0 6px 16px rgba(255, 107, 89, 0.3);
-  background: linear-gradient(145deg, #ffbfb2, #ff8f7a);
+  background-image: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 60%), linear-gradient(145deg, #ffbfb2, #ff8f7a);
 }
 .fab-add:active {
   transform: scale(0.92) translateY(2px);
@@ -205,8 +204,8 @@ body {
 
 /* 星星：浮动动画 */
 .fab-star {
-  width: 24px;
-  height: 24px;
+  font-size: 24px;
+  line-height: 1;
   margin-bottom: 1px;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08));
   animation: fab-float-star 3s ease-in-out infinite;
@@ -228,8 +227,8 @@ body {
   position: absolute;
   top: 6px;
   right: 8px;
-  width: 16px;
-  height: 16px;
+  font-size: 16px;
+  line-height: 1;
   filter: drop-shadow(0 2px 6px rgba(255, 215, 0, 0.5));
   animation: fab-pop-heart 2.4s ease-in-out infinite;
   transform-origin: center;
@@ -260,18 +259,15 @@ body {
     right: 20px;
   }
   .fab-star {
-    width: 21px;
-    height: 21px;
+    font-size: 21px;
   }
   .fab-text {
     font-size: 15px;
   }
   .fab-heart {
-    font-size: 15px;
+    font-size: 14px;
     top: 4px;
     right: 6px;
-    width: 14px;
-    height: 14px;
   }
 }
 @media (max-width: 380px) {
@@ -282,16 +278,14 @@ body {
     right: 16px;
   }
   .fab-star {
-    width: 18px;
-    height: 18px;
+    font-size: 18px;
   }
   .fab-text {
     font-size: 13px;
     letter-spacing: 0.5px;
   }
   .fab-heart {
-    width: 12px;
-    height: 12px;
+    font-size: 12px;
     top: 2px;
     right: 4px;
   }
