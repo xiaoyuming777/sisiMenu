@@ -246,12 +246,7 @@ onDeactivated(() => {
   width: 96px;
   height: 96px;
   object-fit: contain;
-  animation: chef-bear-bounce 2.6s ease-in-out infinite;
   filter: drop-shadow(0 4px 10px rgba(180, 120, 80, 0.22));
-}
-@keyframes chef-bear-bounce {
-  0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(-5px) rotate(2deg); }
 }
 .cute-title {
   font-size: 32px;
