@@ -336,30 +336,14 @@ watch(
 <style>
 /* ═══ 弹窗缩放动画（居中弹窗用，替换默认淡入） ═══
    注意：不能改 transform（Vant 用它做居中定位），用独立 scale 属性缩放
-   进入：0.72 → 1.04 丝滑回弹 → 1.0（放大过头再落回） */
-.ep-scale-enter-active {
-  animation: ep-pop-in 0.42s cubic-bezier(0.34, 1.3, 0.5, 1) both;
-}
+   顺滑减速：0.72 → 1.0，无回弹（用户反馈此版本手感最舒服） */
+.ep-scale-enter-active,
 .ep-scale-leave-active {
-  transition: opacity 0.18s ease, scale 0.18s ease;
+  transition: opacity 0.28s ease, scale 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
+.ep-scale-enter-from,
 .ep-scale-leave-to {
   opacity: 0;
-  scale: 0.85;
-}
-
-@keyframes ep-pop-in {
-  0% {
-    opacity: 0;
-    scale: 0.72;
-  }
-  62% {
-    opacity: 1;
-    scale: 1.04;
-  }
-  100% {
-    opacity: 1;
-    scale: 1;
-  }
+  scale: 0.72;
 }
 </style>
