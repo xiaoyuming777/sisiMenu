@@ -2,6 +2,7 @@
   <van-popup
     :show="show"
     position="center"
+    transition="ep-scale"
     :style="{ width: '86vw', maxWidth: '420px', borderRadius: '28px', overflow: 'hidden' }"
     @update:show="$emit('update:show', $event)"
     :close-on-click-overlay="false"
@@ -329,5 +330,19 @@ watch(
   font-size: 10px;
   letter-spacing: 2px;
   color: #d4b98a;
+}
+</style>
+
+<style>
+/* ═══ 弹窗缩放动画（居中弹窗用，替换默认淡入） ═══
+   注意：不能改 transform（Vant 用它做居中定位），用独立 scale 属性缩放 */
+.ep-scale-enter-active,
+.ep-scale-leave-active {
+  transition: opacity 0.28s ease, scale 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ep-scale-enter-from,
+.ep-scale-leave-to {
+  opacity: 0;
+  scale: 0.72;
 }
 </style>
