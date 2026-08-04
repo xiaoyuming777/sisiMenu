@@ -181,7 +181,7 @@ body {
   height: 80px;
   border-radius: 50%;
   background-image: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 60%), linear-gradient(145deg, #ffb3a6, #ff8a7a);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: none;
   box-shadow: 0 8px 24px rgba(255, 138, 122, 0.5), 0 4px 12px rgba(255, 107, 89, 0.25);
   cursor: pointer;
   padding: 0;
