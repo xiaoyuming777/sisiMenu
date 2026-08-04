@@ -36,7 +36,7 @@
 
       <!-- 今天吃什么：翻牌子入口 -->
       <button class="eat-btn" @click="openEat" aria-label="今天吃什么">
-        <img class="eat-btn-dog" src="/deco/xiaobai-milktea.png" alt="" />
+        <img class="eat-btn-dog" src="/deco/xiaobai-drool.gif" alt="" />
         今天吃什么
         <span class="eat-btn-arrow">→</span>
       </button>
