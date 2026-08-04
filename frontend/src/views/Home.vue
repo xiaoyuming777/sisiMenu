@@ -238,7 +238,7 @@ onDeactivated(() => {
   position: relative;
   margin-top: 20px;
 }
-/* 熊厨师：绝对定位，从标题右上角探出头，俏皮自然 */
+/* 小白厨师：绝对定位，从标题右上角探出头，俏皮自然 */
 .cute-chef-bear {
   position: absolute;
   right: -8px;

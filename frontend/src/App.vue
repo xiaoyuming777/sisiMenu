@@ -28,7 +28,7 @@
       <span class="fab-heart">❤️</span>
     </button>
 
-    <!-- 上新按钮旁的小狗贴纸（动态GIF，黑底透明处理） -->
+    <!-- 上新按钮旁的小鸡毛贴纸（动态GIF） -->
     <img
       v-if="!$route.path.startsWith('/dish')"
       class="fab-pet"

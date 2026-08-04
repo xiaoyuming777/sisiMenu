@@ -22,9 +22,9 @@
 
       <!-- ═══ 抽选区 ═══ -->
       <div class="ep-stage" :class="{ 'is-result': !rolling && result }">
-        <!-- 魔法小熊：左上角探头施法（与右上角幽灵对称） -->
+        <!-- 小鸡毛（魔法版）：左上角探头施法，与小白对称 -->
         <img class="ep-bear" src="/deco/bear-magic.gif" alt="" />
-        <!-- 像素小幽灵：右上角探头观战 -->
+        <!-- 小白（像素版）：右上角探头观战 -->
         <img class="ep-ghost" src="/deco/ghost-piko.gif" alt="" />
 
         <div v-if="dishes.length === 0" class="ep-empty">
