@@ -33,6 +33,13 @@
           </button>
         </div>
       </div>
+
+      <!-- 今天吃什么：翻牌子入口 -->
+      <button class="eat-btn" @click="openEat" aria-label="今天吃什么">
+        <img class="ic" src="/icons/dice.svg" alt="" />
+        今天吃什么
+        <span class="eat-btn-arrow">→</span>
+      </button>
     </header>
 
     <!-- 加载中 -->
@@ -70,18 +77,35 @@
         <p>未完待续 <img class="ic ic-inline" src="/icons/cupcake.svg" alt="" /></p>
       </footer>
     </div>
+
+    <!-- 今天吃什么：翻牌子 -->
+    <WhatToEatPopup v-model:show="eatShow" :dishes="dishes" @pick="onEatPick" />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onActivated, onDeactivated, inject, watch, nextTick } from 'vue'
 import { showToast } from 'vant'
+import WhatToEatPopup from '../components/WhatToEatPopup.vue'
 
 defineOptions({ name: 'Home' })
 
 const dishes = ref([])
 const stats = ref({ total: 0, totalCooked: 0, thisMonth: 0 })
 const loading = ref(true)
+
+// 今天吃什么：翻牌子弹窗
+const eatShow = ref(false)
+function openEat() {
+  if (dishes.value.length === 0) {
+    showToast('菜单还空着，先记一道菜吧')
+    return
+  }
+  eatShow.value = true
+}
+function onEatPick(dish) {
+  openDishDetail(dish.id)
+}
 
 // 布局模式：1col 单列 / 2col 双列（记住用户选择，默认双列）
 const layout = ref(localStorage.getItem('menuLayout') || '2col')
@@ -387,6 +411,43 @@ onDeactivated(() => {
   letter-spacing: 4px;
   color: #d4b98a;
   margin: 0;
+}
+
+/* ═══ 今天吃什么：翻牌子入口按钮 ═══ */
+.eat-btn {
+  margin-top: 14px;
+  width: 100%;
+  height: 46px;
+  border: none;
+  border-radius: 99px;
+  background: linear-gradient(135deg, #ffd66b 0%, #ffc94d 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 6px 18px rgba(255, 180, 90, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.eat-btn .ic {
+  width: 17px;
+  height: 17px;
+}
+.eat-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 3px 10px rgba(255, 180, 90, 0.3);
+}
+.eat-btn-arrow {
+  font-size: 14px;
+  opacity: 0.85;
+  transition: transform 0.2s;
+}
+.eat-btn:active .eat-btn-arrow {
+  transform: translateX(3px);
 }
 
 /* ═══ 加载 / 空状态 ═══ */
