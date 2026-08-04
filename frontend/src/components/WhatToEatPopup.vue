@@ -22,6 +22,9 @@
 
       <!-- ═══ 抽选区 ═══ -->
       <div class="ep-stage" :class="{ 'is-result': !rolling && result }">
+        <!-- 像素小幽灵：右上角探头观战 -->
+        <img class="ep-ghost" src="/deco/ghost-piko.gif" alt="" />
+
         <div v-if="dishes.length === 0" class="ep-empty">
           <div class="ep-empty-icon"><img src="/icons/pot.svg" alt="" /></div>
           <p class="ep-empty-text">菜单还空着，先记一道菜吧</p>
@@ -192,6 +195,18 @@ watch(
 .ep-stage {
   position: relative;
   min-height: 300px;
+}
+/* 像素小幽灵：右上角探头观战，俏皮点缀 */
+.ep-ghost {
+  position: absolute;
+  right: -14px;
+  top: -24px;
+  width: 68px;
+  height: 68px;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 3;
+  filter: drop-shadow(0 4px 8px rgba(180, 120, 90, 0.18));
 }
 .ep-card {
   background: #fff;
