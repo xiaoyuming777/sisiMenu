@@ -30,9 +30,13 @@
 
         <!-- 内容 -->
         <template v-else>
-          <!-- 全宽圆角大图 -->
-          <div class="dp-photo" @click="previewShow = true">
-            <img :src="dish.photo" :alt="dish.name" />
+          <!-- 全宽圆角大图（多图横向滑动） -->
+          <div class="dp-photo" @click="previewAt(0)">
+            <div v-if="dishPhotos.length > 1" class="dp-photo-scroll">
+              <img v-for="(p, i) in dishPhotos" :key="p" :src="p" :alt="dish.name" @click.stop="previewAt(i)" />
+            </div>
+            <img v-else :src="dishPhotos[0] || dish.photo" :alt="dish.name" />
+            <span v-if="dishPhotos.length > 1" class="dp-photo-count">1/{{ dishPhotos.length }}</span>
           </div>
 
           <!-- 标题区 -->
@@ -71,6 +75,52 @@
             <p class="dp-note">{{ dish.note }}</p>
           </section>
 
+          <!-- ═══ 评论区 ═══ -->
+          <section class="dp-sec dp-comment-sec">
+            <div class="dp-sec-hd">
+              <span class="dp-sec-rule"></span>
+              <span class="dp-sec-title"><img class="ic" src="/icons/chat.svg" alt="" /> 评论
+                <span v-if="comments.length" class="cmt-count">{{ comments.length }}</span>
+              </span>
+            </div>
+
+            <!-- 评论列表 -->
+            <div v-if="comments.length" class="cmt-list">
+              <div v-for="c in comments" :key="c.id" class="cmt-item">
+                <div class="cmt-avatar">{{ avatarText(c.nickname) }}</div>
+                <div class="cmt-body">
+                  <div class="cmt-meta">
+                    <span class="cmt-nick">{{ c.nickname }}</span>
+                    <span class="cmt-time">{{ relTime(c.created_at) }}</span>
+                  </div>
+                  <p class="cmt-content">{{ c.content }}</p>
+                </div>
+              </div>
+            </div>
+            <p v-else class="cmt-empty">还没有评论，来抢沙发～ 🛋️</p>
+
+            <!-- 输入区 -->
+            <div class="cmt-input-row">
+              <input
+                v-model="cmtNick"
+                class="cmt-nick-input"
+                maxlength="20"
+                placeholder="昵称"
+                @blur="saveNick"
+              />
+              <input
+                v-model="cmtText"
+                class="cmt-text-input"
+                maxlength="200"
+                placeholder="说点什么…"
+                @keyup.enter="submitComment"
+              />
+              <button class="cmt-send" :disabled="sending || !cmtText.trim()" @click="submitComment">
+                发送
+              </button>
+            </div>
+          </section>
+
           <!-- 操作 -->
           <div class="dp-actions">
             <button class="dp-act dp-act-edit" @click="openDishForm('edit', dish.id)">编辑</button>
@@ -80,11 +130,22 @@
       </div>
     </div>
 
-    <!-- ═══ 图片全屏预览 ═══ -->
+    <!-- ═══ 图片全屏预览（多图） ═══ -->
     <Teleport to="body">
       <div v-if="previewShow" class="custom-image-preview" @click="previewShow = false">
-        <img :src="dish.photo" :alt="dish.name" class="preview-img" @click.stop />
+        <img
+          v-if="dishPhotos[previewIndex]"
+          :src="dishPhotos[previewIndex]"
+          :alt="dish.name"
+          class="preview-img"
+          @click.stop
+        />
         <button class="preview-close" @click="previewShow = false">✕</button>
+        <template v-if="dishPhotos.length > 1">
+          <button class="preview-nav preview-prev" :disabled="previewIndex <= 0" @click.stop="previewIndex--">‹</button>
+          <button class="preview-nav preview-next" :disabled="previewIndex >= dishPhotos.length - 1" @click.stop="previewIndex++">›</button>
+          <span class="preview-counter">{{ previewIndex + 1 }} / {{ dishPhotos.length }}</span>
+        </template>
       </div>
     </Teleport>
 
@@ -122,9 +183,89 @@ const dataVersion = inject('dataVersion', null)
 const dish = ref(null)
 const loading = ref(false)
 const previewShow = ref(false)
+const previewIndex = ref(0)
 const generating = ref(false)
 const posterShow = ref(false)
 const posterUrl = ref('')
+
+// 多图：优先用 photos 数组，兼容旧数据只有 photo
+const dishPhotos = computed(() => {
+  if (!dish.value) return []
+  if (Array.isArray(dish.value.photos) && dish.value.photos.length) return dish.value.photos
+  return dish.value.photo ? [dish.value.photo] : []
+})
+
+function previewAt(idx) {
+  previewIndex.value = idx
+  previewShow.value = true
+}
+
+/* ═══════════════════ 评论 ═══════════════════ */
+const comments = ref([])
+const commentsLoading = ref(false)
+const cmtNick = ref(localStorage.getItem('cmt_nick') || '')
+const cmtText = ref('')
+const sending = ref(false)
+
+function saveNick() {
+  const nick = cmtNick.value.trim()
+  if (nick) localStorage.setItem('cmt_nick', nick.slice(0, 20))
+}
+
+function avatarText(nickname) {
+  const n = (nickname || '').trim()
+  return n ? n[0] : '匿'
+}
+
+function relTime(ts) {
+  if (!ts) return ''
+  const t = new Date(ts.replace(' ', 'T')).getTime()
+  if (isNaN(t)) return ''
+  const diff = Date.now() - t
+  const min = Math.floor(diff / 60000)
+  if (min < 1) return '刚刚'
+  if (min < 60) return `${min} 分钟前`
+  const h = Math.floor(min / 60)
+  if (h < 24) return `${h} 小时前`
+  const d = Math.floor(h / 24)
+  if (d < 30) return `${d} 天前`
+  return ts.slice(0, 10)
+}
+
+async function fetchComments() {
+  if (!dish.value?.name) return
+  commentsLoading.value = true
+  try {
+    const res = await fetch('/api/comments?name=' + encodeURIComponent(dish.value.name))
+    const data = await res.json()
+    if (data.success) comments.value = data.data
+  } catch (e) { console.error(e) }
+  finally { commentsLoading.value = false }
+}
+
+async function submitComment() {
+  const text = cmtText.value.trim()
+  const nick = cmtNick.value.trim().slice(0, 20) || '匿名吃货'
+  if (!text || sending.value) return
+  sending.value = true
+  saveNick()
+  try {
+    const res = await fetch('/api/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dish_name: dish.value.name, nickname: nick, content: text }),
+    })
+    const data = await res.json()
+    if (data.success) {
+      cmtText.value = ''
+      comments.value.push(data.data)
+      showToast({ message: '评论成功', icon: 'success', duration: 1200 })
+    } else {
+      showToast({ message: data.error || '发送失败', icon: 'fail' })
+    }
+  } catch { showToast({ message: '网络错误', icon: 'fail' }) }
+  finally { sending.value = false }
+}
 
 const todayLabel = computed(() => {
   const d = new Date()
@@ -143,15 +284,18 @@ async function fetchDish() {
   try {
     const res = await fetch('/api/dishes/' + props.id)
     const data = await res.json()
-    if (data.success) dish.value = data.data
-    else dish.value = null
+    if (data.success) {
+      dish.value = data.data
+      fetchComments() // 换菜时同步加载评论
+    } else dish.value = null
   } catch (e) { console.error(e) }
   finally { loading.value = false }
 }
 
-// 打开 / 切换菜品时加载
+// 关闭时清掉旧评论，避免下次打开闪旧数据
 watch(() => props.show, (v) => {
   if (v) fetchDish()
+  else comments.value = []
 })
 watch(() => props.id, () => {
   if (props.show) fetchDish()
@@ -534,7 +678,7 @@ async function onShare() {
   padding-bottom: 30px;
 }
 
-/* ═══ 大图：圆角卡片 ═══ */
+/* ═══ 大图：圆角卡片（多图横向滑动） ═══ */
 .dp-photo {
   position: relative;
   margin: 18px 22px 0;
@@ -548,6 +692,33 @@ async function onShare() {
   width: 100%;
   aspect-ratio: 16 / 10;
   object-fit: cover;
+}
+.dp-photo-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.dp-photo-scroll::-webkit-scrollbar {
+  display: none;
+}
+.dp-photo-scroll img {
+  flex-shrink: 0;
+  width: 100%;
+  scroll-snap-align: start;
+}
+.dp-photo-count {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: rgba(60, 40, 20, 0.55);
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 1px;
+  pointer-events: none;
 }
 
 /* ═══ 标题区 ═══ */
@@ -653,6 +824,142 @@ async function onShare() {
   color: #8a6d4b;
   letter-spacing: 0.5px;
   box-shadow: 0 6px 18px rgba(255, 180, 120, 0.14);
+}
+
+/* ═══ 评论区 ═══ */
+.dp-comment-sec {
+  padding-bottom: 4px;
+}
+.cmt-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: #ffd66b;
+  color: #8a6d4b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  border-radius: 99px;
+}
+.cmt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.cmt-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.cmt-avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd66b 0%, #ffc94d 100%);
+  color: #8a6d4b;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(255, 180, 90, 0.3);
+}
+.cmt-body {
+  flex: 1;
+  min-width: 0;
+  background: #fff;
+  border-radius: 4px 14px 14px 14px;
+  padding: 10px 14px;
+  box-shadow: 0 4px 12px rgba(255, 180, 120, 0.12);
+}
+.cmt-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.cmt-nick {
+  font-size: 13px;
+  font-weight: 700;
+  color: #a07c3a;
+}
+.cmt-time {
+  font-size: 11px;
+  color: #d4b98a;
+}
+.cmt-content {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #6b5540;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+.cmt-empty {
+  margin: 0 0 18px;
+  font-size: 13px;
+  color: #d4b98a;
+  letter-spacing: 1px;
+  text-align: center;
+  padding: 6px 0;
+}
+.cmt-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border-radius: 99px;
+  padding: 6px 6px 6px 16px;
+  box-shadow: 0 4px 14px rgba(255, 180, 120, 0.14);
+}
+.cmt-nick-input {
+  width: 64px;
+  flex-shrink: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  color: #8a6d4b;
+  border-right: 1px dashed #f0d9b0;
+}
+.cmt-nick-input::placeholder,
+.cmt-text-input::placeholder {
+  color: #d4b98a;
+}
+.cmt-text-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #6b5540;
+}
+.cmt-send {
+  flex-shrink: 0;
+  height: 34px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 99px;
+  background: linear-gradient(135deg, #ffd66b 0%, #ffc94d 100%);
+  color: #8a6d4b;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.cmt-send:active {
+  transform: scale(0.94);
+}
+.cmt-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ═══ 操作按钮：可爱胶囊 ═══ */
@@ -792,5 +1099,43 @@ async function onShare() {
   color: #fff;
   font-size: 14px;
   cursor: pointer;
+}
+.preview-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-nav:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+.preview-prev {
+  left: 14px;
+}
+.preview-next {
+  right: 14px;
+}
+.preview-counter {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 14px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 13px;
+  letter-spacing: 2px;
 }
 </style>

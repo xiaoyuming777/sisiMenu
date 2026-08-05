@@ -48,6 +48,8 @@ if (fs.existsSync(distPath)) {
 // API 路由
 const dishesRouter = require('./routes/dishes');
 app.use('/api/dishes', dishesRouter);
+const commentsRouter = require('./routes/comments');
+app.use('/api/comments', commentsRouter);
 
 // SPA fallback
 if (fs.existsSync(distPath)) {

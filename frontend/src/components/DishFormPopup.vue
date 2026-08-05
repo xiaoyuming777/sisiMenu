@@ -25,31 +25,34 @@
 
       <div class="fp-body" ref="bodyRef">
         <van-form @submit="onSubmit">
-          <!-- 照片 -->
+          <!-- 照片（最多 10 张） -->
           <section class="fp-sec">
             <div class="fp-sec-hd">
               <span class="fp-sec-rule"></span>
               <span class="fp-sec-title"><img class="ic" src="/icons/camera.svg" alt="" /> 照片</span>
+              <span class="fp-photo-count">{{ photoItems.length }}/10</span>
             </div>
-            <div class="upload-card" :class="{ 'has-photo': previewUrl }" @click="triggerUpload">
-              <input
-                ref="fileInputRef"
-                type="file"
-                accept="image/*"
-                style="display:none"
-                @change="onFileChange"
-              />
-              <template v-if="previewUrl">
-                <img :src="previewUrl" class="upload-preview-img" @click.stop />
-                <button class="upload-delete-btn" @click.stop="removePhoto" type="button">✕</button>
-              </template>
-              <template v-else>
+            <div class="upload-grid">
+              <div v-for="(item, idx) in photoItems" :key="item.url" class="upload-card has-photo">
+                <img :src="item.url" class="upload-preview-img" @click="previewAt(idx)" />
+                <button class="upload-delete-btn" @click.stop="removePhoto(idx)" type="button">✕</button>
+                <span v-if="idx === 0" class="upload-cover-tag">封面</span>
+              </div>
+              <div v-if="photoItems.length < 10" class="upload-card upload-add" @click="triggerUpload">
                 <div class="upload-placeholder">
                   <span class="upload-plus">＋</span>
-                  <span class="upload-hint">拍照 / 选择照片</span>
+                  <span class="upload-hint">{{ photoItems.length ? '继续添加' : '拍照 / 选择照片' }}</span>
                 </div>
-              </template>
+              </div>
             </div>
+            <input
+              ref="fileInputRef"
+              type="file"
+              accept="image/*"
+              multiple
+              style="display:none"
+              @change="onFileChange"
+            />
           </section>
 
           <!-- 基本信息 -->
@@ -151,6 +154,24 @@
         </button>
       </div>
     </div>
+
+    <!-- ═══ 多图全屏预览 ═══ -->
+    <Teleport to="body">
+      <div v-if="previewShow" class="form-preview-mask" @click.self="previewShow = false">
+        <button class="form-preview-close" @click="previewShow = false" aria-label="关闭预览">✕</button>
+        <img
+          v-if="photoItems[previewIndex]"
+          :src="photoItems[previewIndex].url"
+          class="form-preview-img"
+          alt="预览"
+        />
+        <div class="form-preview-nav">
+          <button :disabled="previewIndex <= 0" @click="previewIndex--" aria-label="上一张">‹</button>
+          <span class="form-preview-tip">{{ previewIndex + 1 }} / {{ photoItems.length }}</span>
+          <button :disabled="previewIndex >= photoItems.length - 1" @click="previewIndex++" aria-label="下一张">›</button>
+        </div>
+      </div>
+    </Teleport>
   </van-popup>
 </template>
 
@@ -170,8 +191,10 @@ const submitting = ref(false)
 const loadingEdit = ref(false)
 const fileInputRef = ref(null)
 const bodyRef = ref(null)
-const previewUrl = ref('')
-const selectedFile = ref(null)
+// 多图：{ url, file }，url 为 blob 预览或服务器路径；file 为待上传的新文件（旧图 file 为 null）
+const photoItems = ref([])
+const previewShow = ref(false)
+const previewIndex = ref(0)
 const showCalendar = ref(false)
 
 const minDate = new Date(2020, 0, 1)
@@ -228,8 +251,11 @@ function resetForm() {
   form.difficulty = '新手友好'
   form.ingredients = ''
   form.note = ''
-  previewUrl.value = ''
-  selectedFile.value = null
+  // 释放 blob 预览
+  for (const it of photoItems.value) {
+    if (it.url?.startsWith('blob:')) URL.revokeObjectURL(it.url)
+  }
+  photoItems.value = []
   loadingEdit.value = false
 }
 
@@ -247,9 +273,8 @@ async function loadDish(id) {
       form.difficulty = d.difficulty
       form.ingredients = d.ingredients || ''
       form.note = d.note || ''
-      if (d.photo) {
-        previewUrl.value = d.photo
-      }
+      const photos = Array.isArray(d.photos) && d.photos.length ? d.photos : (d.photo ? [d.photo] : [])
+      photoItems.value = photos.map(p => ({ url: p, file: null }))
     }
   } catch (e) {
     showToast('加载失败')
@@ -263,20 +288,30 @@ function triggerUpload() {
 }
 
 function onFileChange(e) {
-  const file = e.target.files?.[0]
-  if (!file) return
-  selectedFile.value = file
-  previewUrl.value = URL.createObjectURL(file)
+  const files = Array.from(e.target.files || [])
+  if (!files.length) return
+  const remain = 10 - photoItems.value.length
+  const pick = files.slice(0, remain)
+  for (const f of pick) {
+    photoItems.value.push({ url: URL.createObjectURL(f), file: f })
+  }
+  if (files.length > remain) {
+    showToast(`最多放 10 张，这次只加了 ${remain} 张`)
+  }
   // 重置 input 以便重复选同一张
   e.target.value = ''
 }
 
-function removePhoto() {
-  if (previewUrl.value?.startsWith('blob:')) {
-    URL.revokeObjectURL(previewUrl.value)
-  }
-  previewUrl.value = ''
-  selectedFile.value = null
+function removePhoto(idx) {
+  const it = photoItems.value[idx]
+  if (!it) return
+  if (it.url?.startsWith('blob:')) URL.revokeObjectURL(it.url)
+  photoItems.value.splice(idx, 1)
+}
+
+function previewAt(idx) {
+  previewIndex.value = idx
+  previewShow.value = true
 }
 
 function dateDisplay(dateStr) {
@@ -300,7 +335,7 @@ async function onSubmit() {
     showToast('写个菜名嘛～')
     return
   }
-  if (!selectedFile.value && !previewUrl.value) {
+  if (!photoItems.value.length) {
     showToast('记得传照片～')
     return
   }
@@ -316,8 +351,13 @@ async function onSubmit() {
     fd.append('ingredients', form.ingredients)
     fd.append('note', form.note)
 
-    if (selectedFile.value) {
-      fd.append('photo', selectedFile.value)
+    // 新文件走 photos 多文件字段；旧图（编辑模式）通过 keep_photos 保留
+    for (const it of photoItems.value) {
+      if (it.file) fd.append('photos', it.file)
+    }
+    if (props.mode === 'edit') {
+      const keep = photoItems.value.filter(it => !it.file).map(it => it.url)
+      fd.append('keep_photos', JSON.stringify(keep))
     }
 
     let url = '/api/dishes'
@@ -579,11 +619,22 @@ async function onSubmit() {
   color: #e0cda6;
 }
 
-/* ═══ 照片上传：圆角虚线框 ═══ */
+/* ═══ 照片上传：网格多图 ═══ */
+.fp-photo-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: #d4b98a;
+  letter-spacing: 1px;
+}
+.upload-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
 .upload-card {
   border: 1.5px dashed #ecd9ae;
   border-radius: 16px;
-  height: 150px;
+  height: 108px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -594,21 +645,23 @@ async function onSubmit() {
 }
 .upload-card.has-photo {
   border: none;
+  cursor: default;
 }
 .upload-placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 .upload-plus {
-  font-size: 26px;
+  font-size: 24px;
   color: #e0cda6;
   font-weight: 300;
+  line-height: 1;
 }
 .upload-hint {
-  font-size: 11px;
-  letter-spacing: 3px;
+  font-size: 10px;
+  letter-spacing: 2px;
   color: #d4b98a;
 }
 .upload-preview-img {
@@ -618,17 +671,86 @@ async function onSubmit() {
 }
 .upload-delete-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 26px;
-  height: 26px;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 50%;
   background: rgba(160, 124, 58, 0.6);
   color: #fff;
-  font-size: 11px;
+  font-size: 10px;
   cursor: pointer;
   padding: 0;
+  line-height: 1;
+}
+.upload-cover-tag {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: linear-gradient(135deg, #ffd66b 0%, #ffc94d 100%);
+  color: #8a6d4b;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* ═══ 多图全屏预览 ═══ */
+.form-preview-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.form-preview-img {
+  max-width: 94vw;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.form-preview-nav {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.form-preview-nav button {
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+}
+.form-preview-nav button:disabled {
+  opacity: 0.3;
+}
+.form-preview-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+}
+.form-preview-tip {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  letter-spacing: 2px;
+  margin-top: 12px;
 }
 
 /* ═══ 提交按钮：蜂蜜黄胶囊 ═══ */

@@ -26,6 +26,25 @@ async function optimizePhoto(filePath) {
   }
 }
 
+// photos 字段规范化：DB 存 JSON 数组字符串，返回给前端时转成数组（兼容旧数据只有 photo）
+function photosOf(dish) {
+  try {
+    const arr = JSON.parse(dish.photos || '');
+    if (Array.isArray(arr) && arr.length) return arr;
+  } catch (e) { /* 非法 JSON 忽略 */ }
+  return dish.photo ? [dish.photo] : [];
+}
+
+// 删除一组照片文件（忽略不存在的）
+function unlinkPhotos(photos) {
+  for (const p of photos || []) {
+    try {
+      const fp = path.join(UPLOAD_DIR, path.basename(p));
+      if (fs.existsSync(fp)) fs.unlinkSync(fp);
+    } catch (e) { console.error('删除照片失败:', p, e.message); }
+  }
+}
+
 // multer 配置
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOAD_DIR),
@@ -63,7 +82,7 @@ router.get('/', (req, res) => {
     sql += ' ORDER BY cook_date DESC, created_at DESC';
 
     const dishes = db.prepare(sql).all(...params);
-    res.json({ success: true, data: dishes });
+    res.json({ success: true, data: dishes.map(d => ({ ...d, photos: photosOf(d) })) });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -107,15 +126,15 @@ router.get('/:id', (req, res) => {
     const dish = db.prepare('SELECT * FROM dishes WHERE id = ?').get(req.params.id);
     if (!dish) return res.status(404).json({ success: false, error: '没找到这道菜' });
     const count = db.prepare('SELECT COUNT(*) as times FROM dishes WHERE name = ?').get(dish.name);
-    res.json({ success: true, data: { ...dish, cookedTimes: count.times } });
+    res.json({ success: true, data: { ...dish, photos: photosOf(dish), cookedTimes: count.times } });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-// POST /api/dishes — 新增菜品
+// POST /api/dishes — 新增菜品（支持最多 10 张照片）
 router.post('/', (req, res, next) => {
-  upload.single('photo')(req, res, (err) => {
+  upload.array('photos', 10)(req, res, (err) => {
     if (err) {
       console.error('上传错误:', err.message);
       return res.status(400).json({ success: false, error: err.message || '照片上传失败' });
@@ -125,21 +144,25 @@ router.post('/', (req, res, next) => {
 }, async (req, res) => {
   try {
     const { name, cook_date, cook_by, rating, difficulty, ingredients, note } = req.body;
-    if (req.file) {
-      await optimizePhoto(req.file.path); // 上传后自动压缩
+    const files = req.files || [];
+    for (const f of files) {
+      await optimizePhoto(f.path); // 每张上传后自动压缩
     }
-    const photo = req.file ? '/uploads/' + req.file.filename : '';
+    const photos = files.map(f => '/uploads/' + f.filename);
+    const photo = photos[0] || '';
 
-    console.log('收到新增请求:', { name, cook_by, rating, difficulty, hasPhoto: !!req.file });
+    console.log('收到新增请求:', { name, cook_by, rating, difficulty, photoCount: photos.length });
 
     if (!name || !photo) {
+      // 必填没满足时清掉刚上传的文件
+      unlinkPhotos(photos);
       return res.status(400).json({ success: false, error: '菜名和照片是必填的哦' });
     }
 
     const result = db.prepare(`
-      INSERT INTO dishes (name, photo, cook_date, cook_by, rating, difficulty, ingredients, note)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(name, photo, cook_date || new Date().toISOString().slice(0,10), cook_by || '思思', Number(rating) || 5, difficulty || '新手友好', ingredients || '', note || '');
+      INSERT INTO dishes (name, photo, photos, cook_date, cook_by, rating, difficulty, ingredients, note)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(name, photo, JSON.stringify(photos), cook_date || new Date().toISOString().slice(0,10), cook_by || '思思', Number(rating) || 5, difficulty || '新手友好', ingredients || '', note || '');
 
     console.log('新增成功, ID:', result.lastInsertRowid);
     res.json({ success: true, data: { id: result.lastInsertRowid } });
@@ -149,28 +172,46 @@ router.post('/', (req, res, next) => {
   }
 });
 
-// PUT /api/dishes/:id — 修改菜品
-router.put('/:id', upload.single('photo'), async (req, res) => {
+// PUT /api/dishes/:id — 修改菜品（支持多图：keep_photos=保留的旧图 JSON 数组 + 新上传的 photos）
+router.put('/:id', upload.array('photos', 10), async (req, res) => {
   try {
     const { name, cook_date, cook_by, rating, difficulty, ingredients, note } = req.body;
     const dish = db.prepare('SELECT * FROM dishes WHERE id = ?').get(req.params.id);
     if (!dish) return res.status(404).json({ success: false, error: '没找到这道菜' });
 
-    let photo = dish.photo;
-    if (req.file) {
-      // 删除旧照片
-      const oldPath = path.join(UPLOAD_DIR, path.basename(dish.photo));
-      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-      await optimizePhoto(req.file.path); // 新照片自动压缩
-      photo = '/uploads/' + req.file.filename;
+    // 旧照片集合
+    const oldPhotos = photosOf(dish);
+    // 前端要保留的旧照片（去重）
+    let keepPhotos = [];
+    try {
+      const kp = JSON.parse(req.body.keep_photos || '[]');
+      if (Array.isArray(kp)) keepPhotos = [...new Set(kp.filter(p => oldPhotos.includes(p)))];
+    } catch (e) { /* 忽略非法 JSON */ }
+
+    // 新上传的照片
+    const files = req.files || [];
+    for (const f of files) await optimizePhoto(f.path);
+    const newPhotos = files.map(f => '/uploads/' + f.filename);
+
+    const photos = [...keepPhotos, ...newPhotos];
+    const photo = photos[0] || '';
+
+    // 被移除的旧照片：删除物理文件
+    const removed = oldPhotos.filter(p => !keepPhotos.includes(p));
+    unlinkPhotos(removed);
+
+    if (!photo) {
+      unlinkPhotos(newPhotos);
+      return res.status(400).json({ success: false, error: '至少保留一张照片哦' });
     }
 
     db.prepare(`
-      UPDATE dishes SET name=?, photo=?, cook_date=?, cook_by=?, rating=?, difficulty=?, ingredients=?, note=?
+      UPDATE dishes SET name=?, photo=?, photos=?, cook_date=?, cook_by=?, rating=?, difficulty=?, ingredients=?, note=?
       WHERE id=?
     `).run(
       name || dish.name,
       photo,
+      JSON.stringify(photos),
       cook_date || dish.cook_date,
       cook_by || dish.cook_by,
       Number(rating) || dish.rating,
@@ -192,9 +233,8 @@ router.delete('/:id', (req, res) => {
     const dish = db.prepare('SELECT * FROM dishes WHERE id = ?').get(req.params.id);
     if (!dish) return res.status(404).json({ success: false, error: '没找到这道菜' });
 
-    // 删除照片文件
-    const photoPath = path.join(UPLOAD_DIR, path.basename(dish.photo));
-    if (fs.existsSync(photoPath)) fs.unlinkSync(photoPath);
+    // 删除所有照片文件
+    unlinkPhotos(photosOf(dish));
 
     db.prepare('DELETE FROM dishes WHERE id = ?').run(req.params.id);
     res.json({ success: true });
