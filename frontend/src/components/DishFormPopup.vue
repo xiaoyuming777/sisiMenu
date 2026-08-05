@@ -16,7 +16,10 @@
 
       <!-- ═══ 标题 ═══ -->
       <div class="fp-head">
-        <h3 class="fp-title">{{ mode === 'edit' ? '改一改' : '记一道菜' }}</h3>
+        <h3 class="fp-title">
+          {{ mode === 'edit' ? '改一改' : '记一道菜' }}
+          <img class="fp-title-dog" src="/deco/xiaobai-cooking.gif" alt="" />
+        </h3>
         <p class="fp-subtitle">{{ mode === 'edit' ? '更新这道菜的信息吧' : '写下来，才记得住' }}</p>
       </div>
 
@@ -401,6 +404,7 @@ async function onSubmit() {
 .fp-head {
   padding: 22px 24px 0;
   flex-shrink: 0;
+  position: relative;
 }
 .fp-title {
   font-size: 26px;
@@ -408,6 +412,15 @@ async function onSubmit() {
   color: #8a6d4b;
   letter-spacing: 2px;
   margin: 0 0 6px;
+}
+/* 标题右侧小白做饭动图（绝对定位，探出感） */
+.fp-title-dog {
+  position: absolute;
+  right: 24px;
+  top: 18px;
+  width: 144px;
+  height: 144px;
+  object-fit: contain;
 }
 .fp-subtitle {
   font-size: 10px;
