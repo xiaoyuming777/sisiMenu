@@ -111,14 +111,15 @@
               </button>
             </div>
           </section>
-
-          <!-- 操作：纯图标小按钮（双击菜名切换显示，入场动画） -->
-          <div v-show="showActions" class="dp-actions">
-            <button class="dp-act dp-act-edit" title="编辑" aria-label="编辑" @click="openDishForm('edit', dish.id)">✏️</button>
-            <button class="dp-act dp-act-del" title="删除" aria-label="删除" @click="handleDelete">🗑️</button>
-          </div>
         </template>
       </div>
+      <!-- 操作：悬浮右下角（双击菜名切换显示，不随内容滚动） -->
+      <transition name="dp-act-fade">
+        <div v-show="showActions" class="dp-actions">
+          <button class="dp-act dp-act-edit" title="编辑" aria-label="编辑" @click="openDishForm('edit', dish.id)">✏️</button>
+          <button class="dp-act dp-act-del" title="删除" aria-label="删除" @click="handleDelete">🗑️</button>
+        </div>
+      </transition>
     </div>
 
     <!-- ═══ 图片全屏预览（Vant ImagePreview：滑动切换 + 双指缩放） ═══ -->
@@ -612,6 +613,7 @@ async function onShare() {
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative; /* 悬浮按钮定位参照 */
   background: #fffbf0;
   font-family: -apple-system, 'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', 'Microsoft YaHei', sans-serif;
 }
@@ -941,31 +943,22 @@ async function onShare() {
   cursor: not-allowed;
 }
 
-/* ═══ 操作按钮：纯图标小圆钮（居中，双击菜名切换显示） ═══ */
+/* ═══ 操作按钮：悬浮右下角（双击菜名切换显示） ═══ */
 .dp-actions {
+  position: absolute;
+  right: 18px;
+  bottom: 24px;
   display: flex;
-  justify-content: center;
-  gap: 10px;
-  padding: 28px 26px 0;
-  animation: dp-actions-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-@keyframes dp-actions-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  gap: 12px;
+  z-index: 30;
 }
 .dp-act {
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   border: 1.5px solid;
   border-radius: 50%;
   background: #fff;
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1;
   cursor: pointer;
   display: inline-flex;
@@ -979,12 +972,29 @@ async function onShare() {
 .dp-act-edit {
   border-color: #e8a33d;
   background: #fff3dd;
-  box-shadow: 0 2px 6px rgba(232, 163, 61, 0.18);
+  box-shadow: 0 4px 12px rgba(232, 163, 61, 0.3);
 }
 .dp-act-del {
   border-color: #ffb6a3;
   background: #ffe9e4;
-  box-shadow: 0 2px 6px rgba(200, 86, 58, 0.15);
+  box-shadow: 0 4px 12px rgba(200, 86, 58, 0.25);
+}
+
+/* 悬浮入场：右下角滑入 + 淡入 */
+.dp-act-fade-enter-active,
+.dp-act-fade-leave-active {
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.dp-act-fade-enter-from,
+.dp-act-fade-leave-to {
+  opacity: 0;
+  transform: translateY(14px) scale(0.85);
+}
+.dp-act-fade-enter-to,
+.dp-act-fade-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 /* ═══ 加载 / 空状态 ═══ */
