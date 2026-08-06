@@ -936,10 +936,10 @@ async function onShare() {
   cursor: not-allowed;
 }
 
-/* ═══ 操作按钮：纯图标小圆钮（右对齐，轻量不干扰评论区） ═══ */
+/* ═══ 操作按钮：纯图标小圆钮（居中，轻量不干扰评论区） ═══ */
 .dp-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 10px;
   padding: 28px 26px 0;
 }
