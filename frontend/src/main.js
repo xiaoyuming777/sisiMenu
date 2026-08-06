@@ -14,3 +14,12 @@ const app = createApp(App)
 app.use(router)
 app.use(Lazyload, { lazyComponent: true })
 app.mount('#app')
+
+// PWA：注册 Service Worker（壳子缓存 + 离线可用；API 永远走网络）
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((err) => {
+      console.warn('SW 注册失败（不影响使用）:', err)
+    })
+  })
+}
