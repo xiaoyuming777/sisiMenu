@@ -4,7 +4,7 @@
     position="bottom"
     :style="{ height: '92%', borderRadius: '24px 24px 0 0' }"
     @update:show="$emit('update:show', $event)"
-    :close-on-click-overlay="false"
+    close-on-click-overlay
   >
     <div class="form-popup">
       <!-- ═══ 顶部刊头 ═══ -->
