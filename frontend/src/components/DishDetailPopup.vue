@@ -39,8 +39,8 @@
             <span v-if="dishPhotos.length > 1" class="dp-photo-count">1/{{ dishPhotos.length }}</span>
           </div>
 
-          <!-- 标题区 -->
-          <div class="dp-head">
+          <!-- 标题区（双击切换编辑/删除按钮显示） -->
+          <div class="dp-head" @dblclick="toggleActions">
             <h1 class="dp-name">{{ dish.name }}</h1>
             <!-- 两只 Good 小狗：标题右侧并排点赞 -->
             <span class="dp-good-group">
@@ -112,8 +112,8 @@
             </div>
           </section>
 
-          <!-- 操作：纯图标小按钮（右对齐，不干扰评论区） -->
-          <div class="dp-actions">
+          <!-- 操作：纯图标小按钮（双击菜名切换显示，入场动画） -->
+          <div v-show="showActions" class="dp-actions">
             <button class="dp-act dp-act-edit" title="编辑" aria-label="编辑" @click="openDishForm('edit', dish.id)">✏️</button>
             <button class="dp-act dp-act-del" title="删除" aria-label="删除" @click="handleDelete">🗑️</button>
           </div>
@@ -167,6 +167,11 @@ const dish = ref(null)
 const loading = ref(false)
 const previewShow = ref(false)
 const previewIndex = ref(0)
+// 编辑/删除按钮显示状态（双击标题区切换；关闭弹窗后保留）
+const showActions = ref(false)
+function toggleActions() {
+  showActions.value = !showActions.value
+}
 const generating = ref(false)
 const posterShow = ref(false)
 const posterUrl = ref('')
@@ -936,12 +941,23 @@ async function onShare() {
   cursor: not-allowed;
 }
 
-/* ═══ 操作按钮：纯图标小圆钮（居中，轻量不干扰评论区） ═══ */
+/* ═══ 操作按钮：纯图标小圆钮（居中，双击菜名切换显示） ═══ */
 .dp-actions {
   display: flex;
   justify-content: center;
   gap: 10px;
   padding: 28px 26px 0;
+  animation: dp-actions-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes dp-actions-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 .dp-act {
   width: 35px;
