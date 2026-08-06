@@ -944,8 +944,8 @@ async function onShare() {
   padding: 28px 26px 0;
 }
 .dp-act {
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   border: 1.5px solid;
   border-radius: 50%;
   background: #fff;
