@@ -4,6 +4,8 @@ frontend/node_modules/
 
 # 构建产物
 frontend/dist/
+frontend/dist.bak/
+frontend/dist-tmp/
 
 # 运行时数据（数据库、照片、日志）
 data/
