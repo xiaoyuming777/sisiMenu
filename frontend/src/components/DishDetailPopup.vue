@@ -723,7 +723,7 @@ async function onShare() {
   letter-spacing: 2px;
   margin: 0;
   line-height: 1.3;
-  padding-right: 165px;
+  padding-right: 125px;
 }
 /* 两只 Good 小狗：标题右侧并排探头点赞 */
 .dp-good-group {
