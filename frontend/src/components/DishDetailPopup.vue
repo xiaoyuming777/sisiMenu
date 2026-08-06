@@ -112,10 +112,10 @@
             </div>
           </section>
 
-          <!-- 操作 -->
+          <!-- 操作：纯图标小按钮（右对齐，不干扰评论区） -->
           <div class="dp-actions">
-            <button class="dp-act dp-act-edit" @click="openDishForm('edit', dish.id)">编辑</button>
-            <button class="dp-act dp-act-del" @click="handleDelete">删除</button>
+            <button class="dp-act dp-act-edit" title="编辑" aria-label="编辑" @click="openDishForm('edit', dish.id)">✏️</button>
+            <button class="dp-act dp-act-del" title="删除" aria-label="删除" @click="handleDelete">🗑️</button>
           </div>
         </template>
       </div>
@@ -936,34 +936,39 @@ async function onShare() {
   cursor: not-allowed;
 }
 
-/* ═══ 操作按钮：可爱胶囊 ═══ */
+/* ═══ 操作按钮：纯图标小圆钮（右对齐，轻量不干扰评论区） ═══ */
 .dp-actions {
   display: flex;
-  gap: 14px;
-  padding: 36px 24px 0;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 28px 26px 0;
 }
 .dp-act {
-  flex: 1;
-  height: 44px;
-  border: none;
-  border-radius: 99px;
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid;
+  border-radius: 50%;
+  background: #fff;
   font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  color: #fff;
+  line-height: 1;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 .dp-act:active {
-  transform: scale(0.96);
+  transform: scale(0.9);
 }
 .dp-act-edit {
-  background: linear-gradient(135deg, #ffd66b 0%, #ffc94d 100%);
-  box-shadow: 0 6px 16px rgba(255, 180, 90, 0.4);
+  border-color: #e8a33d;
+  background: #fff3dd;
+  box-shadow: 0 2px 6px rgba(232, 163, 61, 0.18);
 }
 .dp-act-del {
-  background: linear-gradient(135deg, #ffb6a3 0%, #ff9e80 100%);
-  box-shadow: 0 6px 16px rgba(255, 150, 120, 0.35);
+  border-color: #ffb6a3;
+  background: #ffe9e4;
+  box-shadow: 0 2px 6px rgba(200, 86, 58, 0.15);
 }
 
 /* ═══ 加载 / 空状态 ═══ */
