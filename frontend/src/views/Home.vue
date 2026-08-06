@@ -62,6 +62,7 @@
       >
         <div class="cute-card-img">
           <img :src="dish.photo" :alt="dish.name" loading="lazy" />
+          <span v-if="layout === '2col' && dish.comment_count" class="cute-cmt-badge"><img class="ic" src="/icons/chat.svg" alt="" /> {{ dish.comment_count }}</span>
         </div>
         <div class="cute-card-info">
           <h2 class="cute-card-name">{{ dish.name }}</h2>
@@ -72,6 +73,7 @@
               <span v-if="dish.difficulty" class="cute-tag"><img class="ic" :src="`/icons/${difficultyIcon(dish.difficulty)}.svg`" alt="" /> {{ dish.difficulty }}</span>
               <span v-if="dish.rating" class="cute-tag cute-tag-star">{{ starText(dish.rating) }}</span>
             </template>
+            <span v-if="dish.comment_count" class="cute-tag cute-tag-cmt"><img class="ic" src="/icons/chat.svg" alt="" /> {{ dish.comment_count }}</span>
           </div>
         </div>
       </article>
@@ -351,6 +353,7 @@ onDeactivated(() => {
   transform: scale(0.98);
 }
 .cute-card-img {
+  position: relative;
   overflow: hidden;
 }
 .cute-card-img img {
@@ -392,6 +395,30 @@ onDeactivated(() => {
   background: #fff6e0;
   color: #e8a33d;
   letter-spacing: 1px;
+}
+.cute-tag-cmt {
+  background: #ffe9e4;
+  color: #c8563a;
+}
+/* 双列卡片：图片右上角评论数角标 */
+.cute-cmt-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(200, 86, 58, 0.92);
+  padding: 3px 8px;
+  border-radius: 99px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.cute-cmt-badge .ic {
+  width: 11px;
+  height: 11px;
 }
 
 /* ═══ 双列布局（grid 两列，等宽等高） ═══ */

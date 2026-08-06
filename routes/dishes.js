@@ -67,15 +67,15 @@ const upload = multer({
 router.get('/', (req, res) => {
   try {
     const { search, cook_by } = req.query;
-    let sql = 'SELECT * FROM dishes WHERE 1=1';
+    let sql = 'SELECT d.*, (SELECT COUNT(*) FROM comments c WHERE c.dish_id = d.id) AS comment_count FROM dishes d WHERE 1=1';
     const params = [];
 
     if (search) {
-      sql += ' AND name LIKE ?';
+      sql += ' AND d.name LIKE ?';
       params.push(`%${search}%`);
     }
     if (cook_by) {
-      sql += ' AND cook_by = ?';
+      sql += ' AND d.cook_by = ?';
       params.push(cook_by);
     }
 

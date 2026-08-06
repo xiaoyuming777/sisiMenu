@@ -224,10 +224,10 @@ function relTime(ts) {
 }
 
 async function fetchComments() {
-  if (!dish.value?.name) return
+  if (!dish.value?.id) return
   commentsLoading.value = true
   try {
-    const res = await fetch('/api/comments?name=' + encodeURIComponent(dish.value.name))
+    const res = await fetch('/api/comments?dish_id=' + dish.value.id)
     const data = await res.json()
     if (data.success) comments.value = data.data
   } catch (e) { console.error(e) }
@@ -244,7 +244,7 @@ async function submitComment() {
     const res = await fetch('/api/comments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ dish_name: dish.value.name, nickname: nick, content: text }),
+      body: JSON.stringify({ dish_id: dish.value.id, nickname: nick, content: text }),
     })
     const data = await res.json()
     if (data.success) {

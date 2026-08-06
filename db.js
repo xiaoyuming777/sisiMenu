@@ -28,6 +28,7 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS comments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    dish_id INTEGER,
     dish_name TEXT NOT NULL,
     nickname TEXT NOT NULL DEFAULT '匿名吃货',
     content TEXT NOT NULL,
@@ -35,6 +36,24 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS idx_comments_dish ON comments(dish_name);
 `);
+
+// 评论按菜 ID 挂载：旧库 comments 没有 dish_id 列时补上，并把旧评论迁移到对应菜
+const cCols = db.prepare("PRAGMA table_info(comments)").all();
+if (!cCols.some(c => c.name === 'dish_id')) {
+  db.exec(`ALTER TABLE comments ADD COLUMN dish_id INTEGER`);
+  // 旧评论：按 dish_name 匹配同名菜（取最早的一条）挂到 dish_id
+  const orphan = db.prepare("SELECT id, dish_name FROM comments WHERE dish_id IS NULL").all();
+  const findBy = db.prepare('SELECT id FROM dishes WHERE name = ? ORDER BY id ASC LIMIT 1');
+  const upd = db.prepare('UPDATE comments SET dish_id = ? WHERE id = ?');
+  let migrated = 0;
+  for (const c of orphan) {
+    const d = findBy.get(c.dish_name);
+    if (d) { upd.run(d.id, c.id); migrated++; }
+  }
+  console.log('[db] comments.dish_id 列已迁移，共', migrated, '条评论关联到菜品');
+}
+// 迁移完成后才建 dish_id 索引（旧表加列前不能建）
+db.exec(`CREATE INDEX IF NOT EXISTS idx_comments_dish_id ON comments(dish_id)`);
 
 // 多图支持：旧库没有 photos 列时补上（JSON 数组，photo 保留第一张）
 const cols = db.prepare("PRAGMA table_info(dishes)").all();
