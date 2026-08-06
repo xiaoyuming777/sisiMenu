@@ -316,6 +316,14 @@ function previewAt(idx) {
   previewShow.value = true
 }
 
+/* ═══ 图片预览：返回键支持（栈序：form → form-preview，返回先关预览） ═══ */
+watch(previewShow, (val) => {
+  if (val) pushPopup('form-preview')
+  else popPopup('form-preview')
+})
+registerPopupCloser('form-preview', () => { previewShow.value = false })
+onBeforeUnmount(() => unregisterPopupCloser('form-preview'))
+
 function dateDisplay(dateStr) {
   if (!dateStr) return '请选择日期'
   const parts = dateStr.split('-')
