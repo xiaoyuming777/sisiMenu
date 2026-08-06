@@ -53,8 +53,8 @@
           <div class="dp-tags">
             <span class="dp-tag"><img class="ic" src="/icons/calendar.svg" alt="" /> {{ dish.cook_date }}</span>
             <span class="dp-tag"><img class="ic" src="/icons/chef.svg" alt="" /> {{ dish.cook_by }}</span>
-            <span v-if="dish.rating" class="dp-tag dp-tag-star">{{ starText(dish.rating) }}</span>
             <span v-if="dish.difficulty" class="dp-tag"><img class="ic" :src="`/icons/${difficultyIcon(dish.difficulty)}.svg`" alt="" /> {{ dish.difficulty }}</span>
+            <span v-if="dish.rating" class="dp-tag dp-tag-star">{{ starText(dish.rating) }}</span>
           </div>
 
           <!-- 备注心得 -->

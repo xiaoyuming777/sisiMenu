@@ -68,6 +68,10 @@
           <div class="cute-card-tags">
             <span class="cute-tag"><img class="ic" src="/icons/calendar.svg" alt="" /> {{ formatDate(dish.cook_date) }}</span>
             <span class="cute-tag"><img class="ic" src="/icons/chef.svg" alt="" /> {{ dish.cook_by }}</span>
+            <template v-if="layout === '1col'">
+              <span v-if="dish.difficulty" class="cute-tag"><img class="ic" :src="`/icons/${difficultyIcon(dish.difficulty)}.svg`" alt="" /> {{ dish.difficulty }}</span>
+              <span v-if="dish.rating" class="cute-tag cute-tag-star">{{ starText(dish.rating) }}</span>
+            </template>
           </div>
         </div>
       </article>
@@ -169,6 +173,12 @@ function formatDate(d) {
   const parts = d.split('-')
   return `${parts[1]}.${parts[2]}`
 }
+
+function starText(r) {
+  const n = Math.max(1, Math.min(5, Math.round(Number(r) || 0)))
+  return '★'.repeat(n) + '☆'.repeat(5 - n)
+}
+function difficultyIcon(d) { return { '新手友好': 'sprout', '小有挑战': 'chili', '硬菜': 'crown' }[d] || '' }
 
 // 首次进入：显示 loading
 onMounted(() => {
@@ -365,6 +375,7 @@ onDeactivated(() => {
 }
 .cute-card-tags {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 10px;
 }
@@ -376,6 +387,11 @@ onDeactivated(() => {
   padding: 4px 12px;
   border-radius: 99px;
   letter-spacing: 0.5px;
+}
+.cute-tag-star {
+  background: #fff6e0;
+  color: #e8a33d;
+  letter-spacing: 1px;
 }
 
 /* ═══ 双列布局（grid 两列，等宽等高） ═══ */
