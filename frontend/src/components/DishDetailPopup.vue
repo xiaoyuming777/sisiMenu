@@ -121,24 +121,16 @@
       </div>
     </div>
 
-    <!-- ═══ 图片全屏预览（多图） ═══ -->
-    <Teleport to="body">
-      <div v-if="previewShow" class="custom-image-preview" @click="previewShow = false">
-        <img
-          v-if="dishPhotos[previewIndex]"
-          :src="dishPhotos[previewIndex]"
-          :alt="dish.name"
-          class="preview-img"
-          @click.stop
-        />
-        <button class="preview-close" @click="previewShow = false">✕</button>
-        <template v-if="dishPhotos.length > 1">
-          <button class="preview-nav preview-prev" :disabled="previewIndex <= 0" @click.stop="previewIndex--">‹</button>
-          <button class="preview-nav preview-next" :disabled="previewIndex >= dishPhotos.length - 1" @click.stop="previewIndex++">›</button>
-          <span class="preview-counter">{{ previewIndex + 1 }} / {{ dishPhotos.length }}</span>
-        </template>
-      </div>
-    </Teleport>
+    <!-- ═══ 图片全屏预览（Vant ImagePreview：滑动切换 + 双指缩放） ═══ -->
+    <van-image-preview
+      v-model:show="previewShow"
+      :images="dishPhotos"
+      :start-position="previewIndex"
+      :max-zoom="4"
+      closeable
+      close-icon="cross"
+      @change="previewIndex = $event"
+    ></van-image-preview>
 
     <!-- ═══ 海报预览 ═══ -->
     <Teleport to="body">
@@ -1052,72 +1044,5 @@ async function onShare() {
 .poster-dl:active {
   background: #fff;
   color: #8a6d4b;
-}
-
-/* ═══ 图片预览 ═══ */
-.custom-image-preview {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2500;
-}
-.preview-img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-.preview-close {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 36px;
-  height: 36px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-  background: none;
-  color: #fff;
-  font-size: 14px;
-  cursor: pointer;
-}
-.preview-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  font-size: 22px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.preview-nav:disabled {
-  opacity: 0.25;
-  cursor: default;
-}
-.preview-prev {
-  left: 14px;
-}
-.preview-next {
-  right: 14px;
-}
-.preview-counter {
-  position: absolute;
-  bottom: 26px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 4px 14px;
-  border-radius: 99px;
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
-  font-size: 13px;
-  letter-spacing: 2px;
 }
 </style>
