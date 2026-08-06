@@ -147,6 +147,7 @@
 <script setup>
 import { ref, computed, inject, watch, onMounted, onBeforeUnmount } from 'vue'
 import { showConfirmDialog, showToast } from 'vant'
+import { pushPopup, popPopup, registerPopupCloser, unregisterPopupCloser } from '../utils/popupHistory'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -188,6 +189,14 @@ function previewAt(idx) {
   previewIndex.value = idx
   previewShow.value = true
 }
+
+/* ═══ 图片预览：返回键支持（栈序：detail → preview，返回先关预览） ═══ */
+watch(previewShow, (val) => {
+  if (val) pushPopup('preview')
+  else popPopup('preview')
+})
+registerPopupCloser('preview', () => { previewShow.value = false })
+onBeforeUnmount(() => unregisterPopupCloser('preview'))
 
 /* ═══════════════════ 评论 ═══════════════════ */
 const comments = ref([])
@@ -266,6 +275,17 @@ const todayLabel = computed(() => {
 function close() {
   emit('update:show', false)
 }
+
+/* ═══ 返回键逐层关闭：详情弹窗注册为 'detail' ═══ */
+// 打开时压锚点（pushPopup 里 pushState），返回键先关详情
+watch(() => props.show, (val) => {
+  if (val) pushPopup('detail')
+  else popPopup('detail')
+})
+// 注册关闭回调：返回键触发时调用 close()
+registerPopupCloser('detail', close)
+// 组件卸载时注销，避免内存泄漏/重复绑定
+onBeforeUnmount(() => unregisterPopupCloser('detail'))
 
 async function fetchDish() {
   if (!props.id) return

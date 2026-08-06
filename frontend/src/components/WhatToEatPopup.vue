@@ -70,7 +70,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onBeforeUnmount } from 'vue'
+import { pushPopup, popPopup, registerPopupCloser, unregisterPopupCloser } from '../utils/popupHistory'
 
 defineOptions({ name: 'WhatToEatPopup' })
 
@@ -79,6 +80,14 @@ const props = defineProps({
   dishes: { type: Array, default: () => [] },
 })
 const emit = defineEmits(['update:show', 'pick'])
+
+// ═══ 返回键关闭：今天吃什么注册为 'eat'（必须在 props 定义之后） ═══
+watch(() => props.show, (val) => {
+  if (val) pushPopup('eat')
+  else popPopup('eat')
+})
+registerPopupCloser('eat', () => emit('update:show', false))
+onBeforeUnmount(() => unregisterPopupCloser('eat'))
 
 const rolling = ref(false)
 const result = ref(null)

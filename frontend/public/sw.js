@@ -1,7 +1,7 @@
 // 思思大王的菜单 - Service Worker
 // 策略：页面壳子缓存优先（离线可用），API/上传图片永远走网络（数据必须最新）
 // ⚠️ 前端代码更新后，把下面版本号 +1 并重新部署（如 menu-v2）
-const CACHE = 'sisimenu-v1'
+const CACHE = 'sisimenu-v2'
 const PRECACHE = ['/', '/index.html', '/manifest.json', '/favicon.png', '/favicon-192.png', '/favicon-512.png']
 
 // 安装：预缓存壳子
@@ -42,13 +42,26 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
+  // HTML（含 index.html / 根路径）：网络优先，永远拿最新版（避免部署后看不到新代码）；离线时兜底用缓存
+  if (url.pathname === '/' || url.pathname.endsWith('.html')) {
+    event.respondWith(
+      fetch(event.request).then((res) => {
+        if (res.ok) {
+          const copy = res.clone()
+          caches.open(CACHE).then((cache) => cache.put(event.request, copy))
+        }
+        return res
+      }).catch(() => caches.match(event.request))
+    )
+    return
+  }
+
   // 静态资源（带 hash 的 js/css/字体/图标）：缓存优先，网络兜底
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached
       return fetch(event.request).then((res) => {
-        // 只缓存成功的同源响应
-        if (res.ok && url.pathname !== '/index.html') {
+        if (res.ok) {
           const copy = res.clone()
           caches.open(CACHE).then((cache) => cache.put(event.request, copy))
         }

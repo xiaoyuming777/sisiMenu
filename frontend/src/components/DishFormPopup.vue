@@ -172,8 +172,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, computed, nextTick } from 'vue'
+import { ref, reactive, watch, computed, nextTick, onBeforeUnmount } from 'vue'
 import { showToast } from 'vant'
+import { pushPopup, popPopup, registerPopupCloser, unregisterPopupCloser } from '../utils/popupHistory'
 
 const props = defineProps({
   show: Boolean,
@@ -182,6 +183,14 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:show', 'saved'])
+
+// ═══ 返回键关闭：表单弹窗注册为 'form'（必须在 props 定义之后） ═══
+watch(() => props.show, (val) => {
+  if (val) pushPopup('form')
+  else popPopup('form')
+})
+registerPopupCloser('form', () => emit('update:show', false))
+onBeforeUnmount(() => unregisterPopupCloser('form'))
 
 const submitting = ref(false)
 const loadingEdit = ref(false)
