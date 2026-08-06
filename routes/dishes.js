@@ -143,7 +143,7 @@ router.post('/', (req, res, next) => {
   });
 }, async (req, res) => {
   try {
-    const { name, cook_date, cook_by, rating, difficulty, ingredients, note } = req.body;
+    const { name, cook_date, cook_by, rating, difficulty, note } = req.body;
     const files = req.files || [];
     for (const f of files) {
       await optimizePhoto(f.path); // 每张上传后自动压缩
@@ -162,7 +162,7 @@ router.post('/', (req, res, next) => {
     const result = db.prepare(`
       INSERT INTO dishes (name, photo, photos, cook_date, cook_by, rating, difficulty, ingredients, note)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(name, photo, JSON.stringify(photos), cook_date || new Date().toISOString().slice(0,10), cook_by || '思思', Number(rating) || 5, difficulty || '新手友好', ingredients || '', note || '');
+    `).run(name, photo, JSON.stringify(photos), cook_date || new Date().toISOString().slice(0,10), cook_by || '思思', Number(rating) || 5, difficulty || '新手友好', '', note || '');
 
     console.log('新增成功, ID:', result.lastInsertRowid);
     res.json({ success: true, data: { id: result.lastInsertRowid } });
@@ -175,7 +175,7 @@ router.post('/', (req, res, next) => {
 // PUT /api/dishes/:id — 修改菜品（支持多图：keep_photos=保留的旧图 JSON 数组 + 新上传的 photos）
 router.put('/:id', upload.array('photos', 10), async (req, res) => {
   try {
-    const { name, cook_date, cook_by, rating, difficulty, ingredients, note } = req.body;
+    const { name, cook_date, cook_by, rating, difficulty, note } = req.body;
     const dish = db.prepare('SELECT * FROM dishes WHERE id = ?').get(req.params.id);
     if (!dish) return res.status(404).json({ success: false, error: '没找到这道菜' });
 
@@ -216,7 +216,7 @@ router.put('/:id', upload.array('photos', 10), async (req, res) => {
       cook_by || dish.cook_by,
       Number(rating) || dish.rating,
       difficulty || dish.difficulty,
-      ingredients !== undefined ? ingredients : dish.ingredients,
+      '',
       note !== undefined ? note : dish.note,
       req.params.id
     );

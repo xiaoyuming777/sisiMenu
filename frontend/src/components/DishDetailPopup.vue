@@ -57,15 +57,6 @@
             <span v-if="dish.difficulty" class="dp-tag"><img class="ic" :src="`/icons/${difficultyIcon(dish.difficulty)}.svg`" alt="" /> {{ dish.difficulty }}</span>
           </div>
 
-          <!-- 食材清单 -->
-          <section v-if="dish.ingredients" class="dp-sec">
-            <div class="dp-sec-hd">
-              <span class="dp-sec-rule"></span>
-              <span class="dp-sec-title"><img class="ic" src="/icons/carrot.svg" alt="" /> 食材</span>
-            </div>
-            <p class="dp-ingredients">{{ dish.ingredients }}</p>
-          </section>
-
           <!-- 备注心得 -->
           <section v-if="dish.note" class="dp-sec">
             <div class="dp-sec-hd">
@@ -801,15 +792,6 @@ async function onShare() {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-}
-
-/* 食材 */
-.dp-ingredients {
-  margin: 0;
-  font-size: 15px;
-  line-height: 2;
-  color: #6b5540;
-  letter-spacing: 1px;
 }
 
 /* 心得：白底卡片 */

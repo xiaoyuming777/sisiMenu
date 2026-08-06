@@ -69,10 +69,6 @@
               <span class="f-label">做菜日期</span>
               <div class="f-input f-input-link">{{ dateDisplay(form.cook_date) }}</div>
             </div>
-            <div class="f-field">
-              <span class="f-label">食材清单</span>
-              <input v-model="form.ingredients" class="f-input" placeholder="鸡翅、可乐、姜片…" />
-            </div>
           </section>
 
           <!-- 做菜人 -->
@@ -207,7 +203,6 @@ const form = reactive({
   cook_by: '思思',
   rating: 5,
   difficulty: '新手友好',
-  ingredients: '',
   note: ''
 })
 
@@ -249,7 +244,6 @@ function resetForm() {
   form.cook_by = '思思'
   form.rating = 5
   form.difficulty = '新手友好'
-  form.ingredients = ''
   form.note = ''
   // 释放 blob 预览
   for (const it of photoItems.value) {
@@ -271,7 +265,6 @@ async function loadDish(id) {
       form.cook_by = d.cook_by
       form.rating = d.rating
       form.difficulty = d.difficulty
-      form.ingredients = d.ingredients || ''
       form.note = d.note || ''
       const photos = Array.isArray(d.photos) && d.photos.length ? d.photos : (d.photo ? [d.photo] : [])
       photoItems.value = photos.map(p => ({ url: p, file: null }))
@@ -348,7 +341,6 @@ async function onSubmit() {
     fd.append('cook_by', form.cook_by)
     fd.append('rating', form.rating)
     fd.append('difficulty', form.difficulty)
-    fd.append('ingredients', form.ingredients)
     fd.append('note', form.note)
 
     // 新文件走 photos 多文件字段；旧图（编辑模式）通过 keep_photos 保留
