@@ -943,11 +943,12 @@ async function onShare() {
   cursor: not-allowed;
 }
 
-/* ═══ 操作按钮：悬浮右下角（双击菜名切换显示） ═══ */
+/* ═══ 操作按钮：悬浮底部居中（双击菜名切换显示） ═══ */
 .dp-actions {
   position: absolute;
-  right: 18px;
+  left: 50%;
   bottom: 24px;
+  transform: translateX(-50%);
   display: flex;
   gap: 12px;
   z-index: 30;
@@ -980,7 +981,7 @@ async function onShare() {
   box-shadow: 0 4px 12px rgba(200, 86, 58, 0.25);
 }
 
-/* 悬浮入场：右下角滑入 + 淡入 */
+/* 悬浮入场：底部滑入 + 淡入（保持居中位移） */
 .dp-act-fade-enter-active,
 .dp-act-fade-leave-active {
   transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
@@ -989,12 +990,12 @@ async function onShare() {
 .dp-act-fade-enter-from,
 .dp-act-fade-leave-to {
   opacity: 0;
-  transform: translateY(14px) scale(0.85);
+  transform: translateX(-50%) translateY(14px) scale(0.85);
 }
 .dp-act-fade-enter-to,
 .dp-act-fade-leave-from {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateX(-50%) translateY(0) scale(1);
 }
 
 /* ═══ 加载 / 空状态 ═══ */
