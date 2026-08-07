@@ -43,7 +43,7 @@
     </header>
 
     <!-- 加载中 -->
-    <div v-if="loading" class="loading">翻页中...</div>
+    <div v-if="loading" class="loading">加载中...</div>
 
     <!-- 空状态 -->
     <div v-else-if="dishes.length === 0" class="empty-state">
@@ -208,7 +208,7 @@ onDeactivated(() => {
 .home {
   background: #fffbf0;
   min-height: 100vh;
-  font-family: -apple-system, 'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', 'Microsoft YaHei', sans-serif;
+  font-family: 'LemiXiaoNaiPaoTi', -apple-system, 'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', 'Microsoft YaHei', sans-serif;
 }
 
 /* ═══ 内联图标（Iconify SVG，跟随文字颜色） ═══ */

@@ -105,6 +105,26 @@ onMounted(() => {
 </script>
 
 <style>
+/* ═══ 全局字体：乐米小奶泡体（完整字体全局引入，任意字都能显示） ═══ */
+@font-face {
+  font-family: 'LemiXiaoNaiPaoTi';
+  src: url('/fonts/LemiXiaoNaiPaoTi-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+/* 标题 / 按钮 / 徽章等强调元素：优先使用可爱字体（与全局一致，冗余保留防覆盖） */
+.font-cute,
+.cute-card-name,
+.cute-times-pill,
+.eat-btn,
+.ep-result-badge,
+.dp-title,
+.empty-title,
+.empty-desc,
+.section-title {
+  font-family: 'LemiXiaoNaiPaoTi', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
 /* ═══ 全局 Vant 主题色覆盖 — 奶油黄风 ═══ */
 :root {
   --van-primary-color: #8a6d4b;
@@ -144,7 +164,7 @@ onMounted(() => {
 /* 全局样式 */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: 'LemiXiaoNaiPaoTi', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   background: #fffbf0;
   color: #8a6d4b;
   -webkit-font-smoothing: antialiased;

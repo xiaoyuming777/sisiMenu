@@ -414,7 +414,7 @@ async function onSubmit() {
   display: flex;
   flex-direction: column;
   background: #fffbf0;
-  font-family: -apple-system, 'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', 'Microsoft YaHei', sans-serif;
+  font-family: 'LemiXiaoNaiPaoTi', -apple-system, 'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', 'Microsoft YaHei', sans-serif;
 }
 
 /* ═══ 顶部刊头（虚线） ═══ */

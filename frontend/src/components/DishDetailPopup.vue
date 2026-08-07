@@ -19,7 +19,7 @@
       <!-- ═══ 内容滚动区 ═══ -->
       <div class="dp-body">
         <!-- 加载中 -->
-        <div v-if="loading" class="loading">翻页中...</div>
+        <div v-if="loading" class="loading">加载中...</div>
 
         <!-- 未找到 -->
         <div v-else-if="!dish" class="empty-state">
@@ -476,7 +476,7 @@ function drawSeal(ctx, cx, cy, r) {
   ctx.arc(0, 0, r, 0, Math.PI * 2)
   ctx.stroke()
   ctx.fillStyle = 'rgba(200,86,58,0.72)'
-  ctx.font = '700 30px "LXGW WenKai", serif'
+  ctx.font = '700 30px "LemiXiaoNaiPaoTi", serif'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.fillText('夯！', 0, 2)
@@ -501,17 +501,17 @@ function wrapText(ctx, text, maxWidth) {
 // 菜名自适应字号
 function fitFont(ctx, text, base, maxWidth) {
   let size = base
-  ctx.font = `700 ${size}px "LXGW WenKai", serif`
+  ctx.font = `700 ${size}px "LemiXiaoNaiPaoTi", serif`
   while (ctx.measureText(text).width > maxWidth && size > 40) {
     size -= 4
-    ctx.font = `700 ${size}px "LXGW WenKai", serif`
+    ctx.font = `700 ${size}px "LemiXiaoNaiPaoTi", serif`
   }
   return size
 }
 
 // 长菜名拆行（居中位置二分）
 function splitName(ctx, name, size, maxWidth) {
-  ctx.font = `700 ${size}px "LXGW WenKai", serif`
+  ctx.font = `700 ${size}px "LemiXiaoNaiPaoTi", serif`
   if (ctx.measureText(name).width <= maxWidth) return [name]
   const lines = []
   let cur = name
@@ -639,7 +639,7 @@ async function onShare() {
   flex-direction: column;
   position: relative; /* 悬浮按钮定位参照 */
   background: #fffbf0;
-  font-family: -apple-system, 'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', 'Microsoft YaHei', sans-serif;
+  font-family: 'LemiXiaoNaiPaoTi', -apple-system, 'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', 'Microsoft YaHei', sans-serif;
 }
 
 /* ═══ 顶部刊头 ═══ */
