@@ -21,3 +21,5 @@ backups/
 postcss.config.js.bak
 .DS_Store
 *.swp
+# 数据库（真实数据在 data/dishes.db，不入库）
+data.db
