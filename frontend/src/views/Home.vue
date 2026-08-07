@@ -65,7 +65,11 @@
           <span v-if="dish.comment_count" class="cute-cmt-badge">💬 {{ dish.comment_count }}</span>
         </div>
         <div class="cute-card-info">
-          <h2 class="cute-card-name">{{ dish.name }}</h2>
+          <div class="cute-card-name-row">
+            <h2 class="cute-card-name">{{ dish.name }}</h2>
+            <!-- 做过 N 次：单列时放菜名右侧（蜜桃虚线胶囊，与详情页徽章同款） -->
+            <span v-if="layout === '1col' && dish.cookedTimes >= 2" class="cute-times-pill">做过 {{ dish.cookedTimes }} 次</span>
+          </div>
           <div class="cute-card-tags">
             <span class="cute-tag"><img class="ic" src="/icons/calendar.svg" alt="" /> {{ formatDate(dish.cook_date) }}</span>
             <span class="cute-tag"><img class="ic" src="/icons/chef.svg" alt="" /> {{ dish.cook_by }}</span>
@@ -374,6 +378,34 @@ onDeactivated(() => {
   color: #8a6d4b;
   margin: 0;
   letter-spacing: 1px;
+}
+/* 菜名 + 做过次数徽章：一行排列，菜名可省略 */
+.cute-card-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cute-card-name-row .cute-card-name {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* 做过 N 次：蜜桃色虚线胶囊（与详情页徽章同款） */
+.cute-times-pill {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: #fff3dd;
+  border: 1px dashed #ffb6a3;
+  color: #c8563a;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 .cute-card-tags {
   display: flex;
