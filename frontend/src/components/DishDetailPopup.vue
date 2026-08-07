@@ -42,6 +42,10 @@
           <!-- 标题区（双击切换编辑/删除按钮显示） -->
           <div class="dp-head" @dblclick="toggleActions">
             <h1 class="dp-name">{{ dish.name }}</h1>
+            <!-- 做过次数徽章：同名菜累计统计（cookedTimes 由后端 /api/dishes/:id 返回） -->
+            <span v-if="dish.cookedTimes >= 2" class="dp-times-badge">
+              <img class="ic" src="/icons/pot.svg" alt="" /> 做过 {{ dish.cookedTimes }} 次
+            </span>
             <!-- 两只 Good 小狗：标题右侧并排点赞 -->
             <span class="dp-good-group">
               <img class="dp-good" src="/deco/xiaobai-good.gif" alt="" />
@@ -744,6 +748,26 @@ async function onShare() {
   margin: 0;
   line-height: 1.3;
   padding-right: 125px;
+}
+/* 做过次数徽章：蜜桃色小胶囊，紧跟菜名下方 */
+.dp-times-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: #fff3dd;
+  border: 1px dashed #ffb6a3;
+  color: #c8563a;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.dp-times-badge .ic {
+  width: 13px;
+  height: 13px;
+  vertical-align: -2px;
 }
 /* 两只 Good 小狗：标题右侧并排探头点赞 */
 .dp-good-group {
